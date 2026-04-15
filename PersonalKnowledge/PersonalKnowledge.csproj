@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.24" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PersonalKnowledge.Application\PersonalKnowledge.Application.csproj" />
+      <ProjectReference Include="..\PersonalKnowledge.Infrastructure\PersonalKnowledge.Infrastructure.csproj" />
+      <ProjectReference Include="..\PersonalKnowledge.Workers\PersonalKnowledge.Workers.csproj" />
+    </ItemGroup>
+
+</Project>

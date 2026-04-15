@@ -1,0 +1,52 @@
+﻿services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: personalknowledge_sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "hG5rzck2vy3cHai"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - personalknowledge_network
+    platform: linux/amd64
+    
+  qdrant:
+    container_name: qdrant_container
+    image: qdrant/qdrant:latest
+    ports:
+      - 6344:6344
+    volumes: 
+     - qdrant_data:/qdrant/storage
+    networks:
+      - personalknowledge_network
+
+  api:
+    build:
+      context: .
+      dockerfile: PersonalKnowledge/Dockerfile
+    container_name: personalknowledge_api
+    depends_on:
+      - sqlserver
+      - qdrant
+    environment:
+      ASPNETCORE_URLS: "https://+:8081"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "password"
+    ports:
+      - "5281:8081"
+    volumes:
+      - ~/.aspnet/https:/https:ro
+    networks:
+      - personalknowledge_network
+
+volumes:
+  sqlserver_data:
+  qdrant_data:
+
+networks:
+  personalknowledge_network:
+    driver: bridge

@@ -1,0 +1,9 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+
+# Configuration files
+PersonalKnowledge/appsettings.json
+PersonalKnowledge/appsettings.Development.json
