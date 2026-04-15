@@ -1,0 +1,6 @@
+@PersonalKnowledge_HostAddress = http://localhost:5135
+
+GET {{PersonalKnowledge_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

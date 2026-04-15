@@ -1,0 +1,46 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
+using PersonalKnowledge.Domain.Entities;
+
+namespace PersonalKnowledge.Infrastructure.Persistence;
+
+public class DataContext : IdentityDbContext<User>
+{
+    public DataContext(DbContextOptions<DataContext> options) : base(options)
+    {
+    }
+
+    public DbSet<Document> Documents { get; set; }
+    public DbSet<Chunk> Chunks { get; set; }
+    public DbSet<Conversation> Conversations { get; set; }
+    public DbSet<Message> Messages { get; set; }
+    public DbSet<MessageSource> MessageSources { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        builder.ApplyConfigurationsFromAssembly(typeof(DataContext).Assembly);
+    }
+}
+
+public class DataContextFactory : IDesignTimeDbContextFactory<DataContext>
+{
+    public DataContext CreateDbContext(string[] args)
+    {
+        var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "PersonalKnowledge");
+        
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(basePath)
+            .AddJsonFile("appsettings.Development.json")
+            .Build();
+
+        var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
+        var connectionString = configuration.GetConnectionString("sqlserver");
+
+        optionsBuilder.UseSqlServer(connectionString);
+
+        return new DataContext(optionsBuilder.Options);
+    }
+}
