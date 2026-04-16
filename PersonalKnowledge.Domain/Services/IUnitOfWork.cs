@@ -4,6 +4,7 @@ namespace PersonalKnowledge.Domain.Services
     {
         public IGenericRepository GenericRepository { get; }
         public IDocumentRepository DocumentRepository { get; }
+        public IConversationRepository ConversationRepository { get; }
         Task<int> SaveChangesAsync();
         Task<bool> BeginTransactionAsync();
         Task<bool> CommitAsync();

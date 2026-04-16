@@ -38,7 +38,12 @@ public class DocumentProcessingJob : IDocumentProcessing
             
             _logger.LogInformation($"Embedding generated for chunk {chunk.Id}, {embedding}");
 
-            await _vectorDatabaseService.InsertEmbedding(chunk.Id, embedding, new() { { "text", chunk.Text }, { "document_id", document.Id.ToString() } });
+            await _vectorDatabaseService.InsertEmbedding(chunk.Id, embedding, new() 
+            { 
+                { "text", chunk.Text }, 
+                { "document_id", document.Id.ToString() },
+                { "user_id", document.UserId.ToString() }
+            });
         }
         
         document.ProcessDocument();

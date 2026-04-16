@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -6,7 +7,7 @@ using PersonalKnowledge.Domain.Entities;
 
 namespace PersonalKnowledge.Infrastructure.Persistence;
 
-public class DataContext : IdentityDbContext<User>
+public class DataContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 {
     public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
@@ -17,6 +18,7 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<Conversation> Conversations { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<MessageSource> MessageSources { get; set; }
+    public DbSet<Topic> Topics { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

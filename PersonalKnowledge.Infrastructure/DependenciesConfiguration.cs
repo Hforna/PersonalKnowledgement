@@ -11,15 +11,54 @@ using Azure.Storage.Blobs;
 using OpenAI;
 using Qdrant.Client;
 
+using PersonalKnowledge.Domain.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 namespace PersonalKnowledge.Infrastructure;
 
 public static class DependenciesConfiguration
 {
     public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddIdentity<IdentityUser, IdentityRole>()
+        services.AddIdentity<User, IdentityRole<Guid>>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+            })
             .AddEntityFrameworkStores<DataContext>()
             .AddDefaultTokenProviders();
+
+        // JWT Authentication Configuration
+        var jwtSettings = configuration.GetSection("Jwt");
+        var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtSettings["Issuer"],
+                ValidAudience = jwtSettings["Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(key)
+            };
+        });
+
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<IRequestService, RequestService>();
 
         services.AddDbContext<DataContext>(d => d.UseSqlServer(configuration.GetConnectionString("sqlserver")));
 
@@ -51,17 +90,12 @@ public static class DependenciesConfiguration
         if (string.IsNullOrEmpty(qdrantUrl))
             throw new InvalidOperationException("Qdrant connection string is not configured");
 
-        var qdrantUri = new Uri(qdrantUrl);
-        var qdrantHost = qdrantUri.Host;
-        var qdrantPort = qdrantUri.Port;
-        var qdrantHttps = qdrantUri.Scheme == "https";
-
-        services.AddScoped<IQdrantClient>(_ => 
-            new QdrantClient(qdrantHost, qdrantPort, qdrantHttps));
+        services.AddSingleton<IQdrantClient>(new QdrantClient(new Uri(qdrantUrl)));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IGenericRepository, GenericRepository>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<IConversationRepository, ConversationRepository>();
 
         var openAiSettings = new OpenAiSettings
         {
@@ -105,6 +139,7 @@ public static class DependenciesConfiguration
 
         services.AddScoped<IVectorDatabaseService, QdrantService>();
         services.AddScoped<IEmbeddingsHandlerService, EmbeddingsHandlerService>();
+        services.AddScoped<ILLMService, LLMService>();
     }
 }
 

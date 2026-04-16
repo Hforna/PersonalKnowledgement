@@ -10,7 +10,7 @@ namespace PersonalKnowledge.Application.Services;
 
 public interface IDocumentService
 {
-    public Task UploadFile(List<IFormFile> files);   
+    public Task UploadFile(List<IFormFile> files, Guid userId);   
 }
 
 public class DocumentService : IDocumentService
@@ -30,7 +30,7 @@ public class DocumentService : IDocumentService
         _uow = unitOfWork;       
     }
 
-    public async Task UploadFile(List<IFormFile> files)
+    public async Task UploadFile(List<IFormFile> files, Guid userId)
     {
         await _uow.BeginTransactionAsync();
         var createdDocuments = new List<Document>();
@@ -57,7 +57,8 @@ public class DocumentService : IDocumentService
             {
                 FileName = stream.Value,
                 FileType = (DocumentType)type,
-                TotalChunks = textChunks.Length
+                TotalChunks = textChunks.Length,
+                UserId = userId
             };
 
             await _uow.GenericRepository.AddAsync(document);

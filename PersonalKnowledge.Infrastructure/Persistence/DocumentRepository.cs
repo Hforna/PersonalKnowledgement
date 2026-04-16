@@ -10,4 +10,9 @@ public class DocumentRepository(DataContext context) : BaseRepository(context), 
     {
         return await _context.Chunks.Where(d => d.DocumentId == documentId).ToListAsync();
     }
+
+    public async Task<IEnumerable<Document>> GetUserDocumentsAsync(Guid userId)
+    {
+        return await _context.Documents.Where(d => d.UserId == userId).ToListAsync();
+    }
 }
