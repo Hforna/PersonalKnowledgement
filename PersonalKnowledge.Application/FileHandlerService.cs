@@ -1,5 +1,6 @@
 using FileTypeChecker;
 using FileTypeChecker.Types;
+using PersonalKnowledge.Domain.Constants;
 using PersonalKnowledge.Domain.Enums;
 using PersonalKnowledge.Domain.Exceptions;
 
@@ -7,51 +8,66 @@ namespace PersonalKnowledge.Application;
 
 public interface IFileHandlerService
 {
-    (bool IsValid, DocumentType? DocumentType) IsValidFile(Stream file, string fileName);
+    (bool IsValid, FileExtension? Extension) IsValidFile(Stream file, string fileName);
     public string[] Chunk(string text, int chunkSize = 500, int overlap = 50);
+    public MediaType GetMediaType(Stream fileStream);
 }
 
 public class FileHandlerService : IFileHandlerService
 {
-    private static readonly Dictionary<string, DocumentType> AllowedExtensions = new()
-    {
-        { ".pdf",  DocumentType.Pdf  },
-        { ".txt",  DocumentType.Txt  },
-        { ".md",   DocumentType.Md   },
-        { ".docx", DocumentType.Docx }
-    };
-
-    public (bool IsValid, DocumentType? DocumentType) IsValidFile(Stream fileStream, string fileName)
+    public (bool IsValid, FileExtension? Extension) IsValidFile(Stream fileStream, string fileName)
     {
         var extension = Path.GetExtension(fileName).ToLowerInvariant();
+        var expectedFileExtension = FileTypeIdentifiers.GetFileExtension(extension);
 
-        if (!AllowedExtensions.TryGetValue(extension, out var documentType))
+        if (expectedFileExtension == null)
             return (false, null);
 
-        if (documentType is DocumentType.Txt or DocumentType.Md)
-            return (true, documentType);
+        if (expectedFileExtension is FileExtension.Txt or FileExtension.Md)
+            return (true, expectedFileExtension);
 
-        var isValidSignature = documentType switch
-        {
-            DocumentType.Pdf  => FileTypeValidator.Is<PortableDocumentFormat>(fileStream),
-            DocumentType.Docx => FileTypeValidator.Is<ZipFile>(fileStream),
-            _                 => false
-        };
-
+        var fileType = FileTypeValidator.GetFileType(fileStream);
         fileStream.Position = 0;
 
-        return isValidSignature
-            ? (true, documentType)
-            : (false, null);
+        if (fileType == null)
+            return (false, null);
+
+        var actualExtension = "." + fileType.Extension.ToLowerInvariant();
+        var actualFileExtension = FileTypeIdentifiers.GetFileExtension(actualExtension);
+
+        // Special case for docx/zip and jpeg/jpg
+        if (expectedFileExtension == actualFileExtension)
+            return (true, expectedFileExtension);
+            
+        if (expectedFileExtension == FileExtension.Docx && fileType.Extension.ToLowerInvariant() == "zip")
+            return (true, expectedFileExtension);
+
+        return (false, null);
+    }
+
+    public MediaType GetMediaType(Stream fileStream)
+    {
+        var fileType = FileTypeValidator.GetFileType(fileStream);
+        fileStream.Position = 0;
+
+        if (fileType == null)
+            return MediaType.DOCUMENT;
+
+        var extension = "." + fileType.Extension.ToLowerInvariant();
+        var fileExtension = FileTypeIdentifiers.GetFileExtension(extension);
+
+        return fileExtension.HasValue 
+            ? FileTypeIdentifiers.GetMediaType(fileExtension.Value) 
+            : MediaType.DOCUMENT;
     }
 
     public string[] Chunk(string text, int chunkSize = 500, int overlap = 50)
     {
         if (chunkSize <= 0)
-            throw new DocumentChunkingException(chunkSize, overlap, "Chunk size must be greater than 0.");
+            throw new AssetChunkingException(chunkSize, overlap, "Chunk size must be greater than 0.");
         
         if (overlap < 0)
-            throw new DocumentChunkingException(chunkSize, overlap, "Overlap cannot be negative.");
+            throw new AssetChunkingException(chunkSize, overlap, "Overlap cannot be negative.");
 
         var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         var chunks = new List<string>();

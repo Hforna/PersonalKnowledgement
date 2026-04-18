@@ -5,17 +5,17 @@ using UglyToad.PdfPig.DocumentLayoutAnalysis.WordExtractor;
 
 namespace PersonalKnowledge.Application;
 
-public interface IDocumentHandlerService
+public interface IAssetHandlerService
 {
-    public DocumentType DocumentParsingType { get; }   
-    public Task<string> GetDocumentText(Stream pdfStream);   
+    public FileExtension AssetParsingType { get; }   
+    public Task<string> GetAssetText(Stream stream);   
 }
 
-public class PdfHandlerService : IDocumentHandlerService
+public class PdfHandlerService : IAssetHandlerService
 {
-    public DocumentType DocumentParsingType { get; } = DocumentType.Pdf;
+    public FileExtension AssetParsingType { get; } = FileExtension.Pdf;
 
-    public Task<string> GetDocumentText(Stream pdfStream)
+    public Task<string> GetAssetText(Stream pdfStream)
     {
         using var pdfDocument = PdfDocument.Open(pdfStream);
         

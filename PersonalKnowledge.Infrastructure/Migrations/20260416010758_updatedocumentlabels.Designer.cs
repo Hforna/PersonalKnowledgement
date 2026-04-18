@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PersonalKnowledge.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using PersonalKnowledge.Infrastructure.Persistence;
 namespace PersonalKnowledge.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260416010758_updatedocumentlabels")]
+    partial class updatedocumentlabels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,67 +156,10 @@ namespace PersonalKnowledge.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("PersonalKnowledge.Domain.Entities.Asset", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("FileType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MediaType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("TopicId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("TotalChunks")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime>("UploadedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TopicId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Assets");
-                });
-
             modelBuilder.Entity("PersonalKnowledge.Domain.Entities.Chunk", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AssetId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("ChunkIndex")
@@ -223,6 +169,9 @@ namespace PersonalKnowledge.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<Guid>("DocumentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -235,7 +184,7 @@ namespace PersonalKnowledge.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AssetId");
+                    b.HasIndex("DocumentId");
 
                     b.ToTable("Chunks");
                 });
@@ -268,6 +217,57 @@ namespace PersonalKnowledge.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Conversations");
+                });
+
+            modelBuilder.Entity("PersonalKnowledge.Domain.Entities.Document", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FileType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TopicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TotalChunks")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopicId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("PersonalKnowledge.Domain.Entities.Message", b =>
@@ -491,32 +491,15 @@ namespace PersonalKnowledge.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PersonalKnowledge.Domain.Entities.Asset", b =>
-                {
-                    b.HasOne("PersonalKnowledge.Domain.Entities.Topic", "Topic")
-                        .WithMany()
-                        .HasForeignKey("TopicId");
-
-                    b.HasOne("PersonalKnowledge.Domain.Entities.User", "User")
-                        .WithMany("Assets")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Topic");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("PersonalKnowledge.Domain.Entities.Chunk", b =>
                 {
-                    b.HasOne("PersonalKnowledge.Domain.Entities.Asset", "Asset")
+                    b.HasOne("PersonalKnowledge.Domain.Entities.Document", "Document")
                         .WithMany()
-                        .HasForeignKey("AssetId")
+                        .HasForeignKey("DocumentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Asset");
+                    b.Navigation("Document");
                 });
 
             modelBuilder.Entity("PersonalKnowledge.Domain.Entities.Conversation", b =>
@@ -524,6 +507,23 @@ namespace PersonalKnowledge.Infrastructure.Migrations
                     b.HasOne("PersonalKnowledge.Domain.Entities.User", null)
                         .WithMany("Conversations")
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("PersonalKnowledge.Domain.Entities.Document", b =>
+                {
+                    b.HasOne("PersonalKnowledge.Domain.Entities.Topic", "Topic")
+                        .WithMany()
+                        .HasForeignKey("TopicId");
+
+                    b.HasOne("PersonalKnowledge.Domain.Entities.User", "User")
+                        .WithMany("Documents")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Topic");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PersonalKnowledge.Domain.Entities.Message", b =>
@@ -568,9 +568,9 @@ namespace PersonalKnowledge.Infrastructure.Migrations
 
             modelBuilder.Entity("PersonalKnowledge.Domain.Entities.User", b =>
                 {
-                    b.Navigation("Assets");
-
                     b.Navigation("Conversations");
+
+                    b.Navigation("Documents");
                 });
 #pragma warning restore 612, 618
         }

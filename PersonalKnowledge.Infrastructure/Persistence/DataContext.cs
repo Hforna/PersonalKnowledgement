@@ -13,7 +13,7 @@ public class DataContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     {
     }
 
-    public DbSet<Document> Documents { get; set; }
+    public DbSet<Asset> Assets { get; set; }
     public DbSet<Chunk> Chunks { get; set; }
     public DbSet<Conversation> Conversations { get; set; }
     public DbSet<Message> Messages { get; set; }

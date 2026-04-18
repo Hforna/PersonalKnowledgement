@@ -1,6 +1,6 @@
 namespace PersonalKnowledge.Domain.Exceptions;
 
-public class FileProcessingException : DocumentException
+public class FileProcessingException : AssetException
 {
     public string FileName { get; }
 

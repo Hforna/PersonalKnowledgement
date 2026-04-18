@@ -62,7 +62,8 @@ public static class DependenciesConfiguration
 
         services.AddDbContext<DataContext>(d => d.UseSqlServer(configuration.GetConnectionString("sqlserver")));
 
-        services.AddScoped<IDocumentProcessing, DocumentProcessingJob>();
+        services.AddScoped<ITextAssetProcessor, TextAssetProcessorJob>();
+        services.AddScoped<IVisualAssetProcessor, VisualAssetProcessorJob>();
         
         var storageType = configuration.GetValue<string>("Storage:Type") ?? "Local";
 
@@ -73,9 +74,17 @@ public static class DependenciesConfiguration
             if (string.IsNullOrEmpty(azureConnectionString))
                 throw new InvalidOperationException("AzureBlobStorage connection string is not configured");
 
-            var blobContainerClient = new BlobContainerClient(new Uri(azureConnectionString), new Azure.Storage.StorageSharedKeyCredential(
-                configuration.GetValue<string>("AzureBlobStorage:AccountName") ?? "",
-                configuration.GetValue<string>("AzureBlobStorage:AccountKey") ?? ""));
+            var accountName = configuration["AzureBlobStorage:AccountName"];
+            var containerName = configuration["AzureBlobStorage:ContainerName"];
+
+            var uri = new Uri($"https://{accountName}.blob.core.windows.net/{containerName}");
+
+            var credential = new Azure.Storage.StorageSharedKeyCredential(
+                accountName,
+                configuration["AzureBlobStorage:AccountKey"]
+            );
+
+            var blobContainerClient = new BlobContainerClient(uri, credential);
             
             services.AddScoped(_ => blobContainerClient);
             services.AddScoped<IStorageService, AzureBlobStorageService>();
@@ -94,7 +103,7 @@ public static class DependenciesConfiguration
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IGenericRepository, GenericRepository>();
-        services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<IAssetRepository, AssetRepository>();
         services.AddScoped<IConversationRepository, ConversationRepository>();
 
         var openAiSettings = new OpenAiSettings

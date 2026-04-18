@@ -3,6 +3,9 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+compose.yaml
+compose.yml
+.ideia
 
 # Configuration files
 PersonalKnowledge/appsettings.json

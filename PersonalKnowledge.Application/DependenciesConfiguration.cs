@@ -7,9 +7,9 @@ public static class DependenciesConfiguration
 {
     public static void AddApplication(this IServiceCollection services)
     {
-        services.AddScoped<IDocumentService, DocumentService>();
+        services.AddScoped<IAssetService, AssetService>();
         services.AddSingleton<IFileHandlerService, FileHandlerService>();       
-        services.AddScoped<IDocumentHandlerService, PdfHandlerService>();
+        services.AddScoped<IAssetHandlerService, PdfHandlerService>();
         services.AddScoped<IConversationService, ConversationService>();
         services.AddScoped<IMessageService, MessageService>();
     }

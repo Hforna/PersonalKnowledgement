@@ -1,7 +1,9 @@
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Sas;
 using PersonalKnowledge.Domain.Services;
 using PersonalKnowledge.Domain.Exceptions;
+using PersonalKnowledge.Domain.Constants;
 
 namespace PersonalKnowledge.Infrastructure.Services;
 
@@ -18,10 +20,22 @@ public class AzureBlobStorageService : IStorageService
     {
         try
         {
-            var blobName = $"{Guid.NewGuid()}_{fileName}";
+            await _containerClient.CreateIfNotExistsAsync(PublicAccessType.None, cancellationToken: cancellationToken);
+            
+            var sanitizedFileName = fileName.Replace(" ", "_");
+            var blobName = $"{Guid.NewGuid()}_{sanitizedFileName}";
             var blobClient = _containerClient.GetBlobClient(blobName);
 
-            await blobClient.UploadAsync(fileStream, overwrite: true, cancellationToken: cancellationToken);
+            var extension = Path.GetExtension(fileName);
+            var fileExtension = FileTypeIdentifiers.GetFileExtension(extension);
+            var contentType = fileExtension.HasValue ? FileTypeIdentifiers.GetMimeType(fileExtension.Value) : "application/octet-stream";
+
+            var uploadOptions = new BlobUploadOptions
+            {
+                HttpHeaders = new BlobHttpHeaders { ContentType = contentType }
+            };
+
+            await blobClient.UploadAsync(fileStream, uploadOptions, cancellationToken);
 
             return blobName;
         }
@@ -69,6 +83,26 @@ public class AzureBlobStorageService : IStorageService
         catch (Exception ex)
         {
             throw new StorageException(fileKey, "Failed to check if file exists in blob storage", ex);
+        }
+    }
+
+    public Task<string> GetUrl(string fileName, Guid userId)
+    {
+        try
+        {
+            var blobClient = _containerClient.GetBlobClient(fileName);
+            
+            if (blobClient.CanGenerateSasUri)
+            {
+                var sasUri = blobClient.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
+                return Task.FromResult(sasUri.AbsoluteUri);
+            }
+
+            return Task.FromResult(blobClient.Uri.AbsoluteUri);
+        }
+        catch (Exception ex)
+        {
+            throw new StorageException(fileName, "Failed to generate URL for blob storage", ex);
         }
     }
 }

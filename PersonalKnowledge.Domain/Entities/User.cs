@@ -10,6 +10,6 @@ public class User : IdentityUser<Guid>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LastLoginAt { get; set; }
 
-    public ICollection<Document> Documents { get; set; } = new List<Document>();
+    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
     public ICollection<Conversation> Conversations { get; set; } = new List<Conversation>();
 }

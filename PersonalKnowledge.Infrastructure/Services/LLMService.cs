@@ -65,4 +65,33 @@ public class LLMService : ILLMService
 
         return response.Value.Content[0].Text ?? "I'm sorry, the response was empty.";
     }
+
+    public async Task<string> DescribeImage(string imageUrl)
+    {
+        var modelOrDeployment = _openAiSettings.IsAzureOpenAI 
+            ? _openAiSettings.ChatDeploymentName 
+            : _openAiSettings.ChatModel;
+        
+        Console.WriteLine($"[DEBUG_LOG] Getting ChatClient for {modelOrDeployment} (Azure: {_openAiSettings.IsAzureOpenAI}) for image analysis");
+        var client = _openAiClient.GetChatClient(modelOrDeployment);
+
+        var messages = new ChatMessage[]
+        {
+            new UserChatMessage(
+                ChatMessageContentPart.CreateTextPart("Analyze the following image and describe its contents in detail, extracting any relevant information."),
+                ChatMessageContentPart.CreateImagePart(new Uri(imageUrl))
+            )
+        };
+
+        Console.WriteLine($"[DEBUG_LOG] Calling CompleteChatAsync for image: {imageUrl}");
+        var response = await client.CompleteChatAsync(messages);
+
+        if (response?.Value?.Content == null || response.Value.Content.Count == 0)
+        {
+            Console.WriteLine("[DEBUG_LOG] Image analysis response is NULL or EMPTY");
+            return "I'm sorry, I couldn't analyze the image.";
+        }
+        
+        return response.Value.Content[0].Text ?? "I'm sorry, the response was empty.";
+    }
 }

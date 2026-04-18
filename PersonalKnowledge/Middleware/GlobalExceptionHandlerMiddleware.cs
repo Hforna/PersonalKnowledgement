@@ -33,11 +33,11 @@ public class GlobalExceptionHandlerMiddleware
 
         var response = exception switch
         {
-            InvalidDocumentFormatException ex => HandleInvalidDocumentFormat(context, ex),
-            DocumentHandlerNotFoundException ex => HandleDocumentHandlerNotFound(context, ex),
+            InvalidAssetFormatException ex => HandleInvalidAssetFormat(context, ex),
+            AssetHandlerNotFoundException ex => HandleAssetHandlerNotFound(context, ex),
             FileProcessingException ex => HandleFileProcessing(context, ex),
-            DocumentChunkingException ex => HandleDocumentChunking(context, ex),
-            DocumentException ex => HandleDocumentException(context, ex),
+            AssetChunkingException ex => HandleAssetChunking(context, ex),
+            AssetException ex => HandleAssetException(context, ex),
             
             EntityNotFoundException ex => HandleEntityNotFound(context, ex),
             RepositoryException ex => HandleRepositoryException(context, ex),
@@ -60,13 +60,13 @@ public class GlobalExceptionHandlerMiddleware
         return response;
     }
 
-    private static Task HandleInvalidDocumentFormat(HttpContext context, InvalidDocumentFormatException ex)
+    private static Task HandleInvalidAssetFormat(HttpContext context, InvalidAssetFormatException ex)
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         var response = new
         {
             isSuccess = false,
-            message = "Invalid document format provided",
+            message = "Invalid asset format provided",
             error = ex.Message,
             statusCode = StatusCodes.Status400BadRequest,
             timestamp = DateTime.UtcNow
@@ -74,15 +74,15 @@ public class GlobalExceptionHandlerMiddleware
         return context.Response.WriteAsJsonAsync(response);
     }
 
-    private static Task HandleDocumentHandlerNotFound(HttpContext context, DocumentHandlerNotFoundException ex)
+    private static Task HandleAssetHandlerNotFound(HttpContext context, AssetHandlerNotFoundException ex)
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         var response = new
         {
             isSuccess = false,
-            message = "Document handler not found",
+            message = "Asset handler not found",
             error = ex.Message,
-            documentType = ex.DocumentType.ToString(),
+            fileExtension = ex.FileExtension.ToString(),
             statusCode = StatusCodes.Status400BadRequest,
             timestamp = DateTime.UtcNow
         };
@@ -104,13 +104,13 @@ public class GlobalExceptionHandlerMiddleware
         return context.Response.WriteAsJsonAsync(response);
     }
 
-    private static Task HandleDocumentChunking(HttpContext context, DocumentChunkingException ex)
+    private static Task HandleAssetChunking(HttpContext context, AssetChunkingException ex)
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         var response = new
         {
             isSuccess = false,
-            message = "Error during document chunking",
+            message = "Error during asset chunking",
             error = ex.Message,
             statusCode = StatusCodes.Status400BadRequest,
             timestamp = DateTime.UtcNow
@@ -118,13 +118,13 @@ public class GlobalExceptionHandlerMiddleware
         return context.Response.WriteAsJsonAsync(response);
     }
 
-    private static Task HandleDocumentException(HttpContext context, DocumentException ex)
+    private static Task HandleAssetException(HttpContext context, AssetException ex)
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         var response = new
         {
             isSuccess = false,
-            message = "Document operation failed",
+            message = "Asset operation failed",
             error = ex.Message,
             statusCode = StatusCodes.Status400BadRequest,
             timestamp = DateTime.UtcNow

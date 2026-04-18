@@ -21,7 +21,8 @@ public class LocalFileStorageService : IStorageService
     {
         try
         {
-            var fileKey = $"{Guid.NewGuid()}_{fileName}";
+            var sanitizedFileName = fileName.Replace(" ", "_");
+            var fileKey = $"{Guid.NewGuid()}_{sanitizedFileName}";
             var filePath = Path.Combine(_storagePath, fileKey);
 
             using (var fileToWrite = File.Create(filePath))
@@ -89,6 +90,12 @@ public class LocalFileStorageService : IStorageService
         {
             throw new StorageException(fileKey, "Failed to check if file exists in local storage", ex);
         }
+    }
+
+    public Task<string> GetUrl(string fileName, Guid userId)
+    {
+        var filePath = Path.Combine(_storagePath, fileName);
+        return Task.FromResult(new Uri(filePath).AbsoluteUri);
     }
 }
 

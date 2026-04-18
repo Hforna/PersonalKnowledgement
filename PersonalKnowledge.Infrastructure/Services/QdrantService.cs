@@ -50,7 +50,7 @@ public class QdrantService : IVectorDatabaseService
         return results.Select(r => new EmbeddingPayloadDto
         {
             text = r.Payload["text"].StringValue,
-            document_id = Guid.Parse(r.Payload["document_id"].StringValue),
+            asset_id = Guid.Parse(r.Payload["document_id"].StringValue),
             user_id = Guid.Parse(r.Payload["user_id"].StringValue)
         }).ToList();
     }

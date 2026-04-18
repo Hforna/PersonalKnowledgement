@@ -9,16 +9,16 @@ namespace PersonalKnowledge.Infrastructure.Persistence
         private readonly DataContext _context;
         private IDbContextTransaction _transaction;
 
-        public UnitOfWork(DataContext context, IGenericRepository genericRepository, IDocumentRepository documentRepository, IConversationRepository conversationRepository)
+        public UnitOfWork(DataContext context, IGenericRepository genericRepository, IAssetRepository assetRepository, IConversationRepository conversationRepository)
         {
             _context = context;
             GenericRepository = genericRepository;
-            DocumentRepository = documentRepository;
+            AssetRepository = assetRepository;
             ConversationRepository = conversationRepository;
         }
 
         public IGenericRepository GenericRepository { get; }
-        public IDocumentRepository DocumentRepository { get; }
+        public IAssetRepository AssetRepository { get; }
         public IConversationRepository ConversationRepository { get; }
 
         public async Task<int> SaveChangesAsync()

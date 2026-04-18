@@ -4,9 +4,9 @@ using PersonalKnowledge.Domain.Entities;
 
 namespace PersonalKnowledge.Infrastructure.Persistence.Configurations;
 
-public class DocumentConfiguration : IEntityTypeConfiguration<Document>
+public class AssetConfiguration : IEntityTypeConfiguration<Asset>
 {
-    public void Configure(EntityTypeBuilder<Document> builder)
+    public void Configure(EntityTypeBuilder<Asset> builder)
     {
         builder.Property(e => e.CreatedAt)
             .HasDefaultValueSql("GETUTCDATE()")

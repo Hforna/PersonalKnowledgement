@@ -6,5 +6,6 @@ public interface IStorageService
     Task<Stream> DownloadAsync(string fileKey, CancellationToken cancellationToken = default);
     Task DeleteAsync(string fileKey, CancellationToken cancellationToken = default);
     Task<bool> ExistsAsync(string fileKey, CancellationToken cancellationToken = default);
+    public Task<string> GetUrl(string fileName, Guid userId);
 }
 

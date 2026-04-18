@@ -7,16 +7,16 @@ using Serilog;
 
 namespace PersonalKnowledge.Infrastructure.Services;
 
-public class DocumentProcessingJob : IDocumentProcessing
+public class TextAssetProcessorJob : ITextAssetProcessor
 {
     private readonly IUnitOfWork _uow;
     private readonly IStorageService _storageService;
     private readonly IEmbeddingsHandlerService _embeddingsHandlerService;
     private readonly IVectorDatabaseService _vectorDatabaseService;
-    private readonly ILogger<DocumentProcessingJob> _logger;
+    private readonly ILogger<TextAssetProcessorJob> _logger;
 
-    public DocumentProcessingJob(IUnitOfWork uow, IStorageService storageService, 
-        IEmbeddingsHandlerService embeddingsHandlerService, IVectorDatabaseService vectorDatabaseService, ILogger<DocumentProcessingJob> logger)
+    public TextAssetProcessorJob(IUnitOfWork uow, IStorageService storageService, 
+        IEmbeddingsHandlerService embeddingsHandlerService, IVectorDatabaseService vectorDatabaseService, ILogger<TextAssetProcessorJob> logger)
     {
         _uow = uow;
         _storageService = storageService;
@@ -25,12 +25,12 @@ public class DocumentProcessingJob : IDocumentProcessing
         _logger = logger;       
     }
 
-    public async Task ProcessDocument(Guid documentId)
+    public async Task ProcessAsset(Guid assetId)
     {
-        var document = await _uow.GenericRepository.GetByIdAsync<Document>(documentId)
-            ?? throw new EntityNotFoundException(nameof(Document), documentId);
+        var asset = await _uow.GenericRepository.GetByIdAsync<Asset>(assetId)
+            ?? throw new EntityNotFoundException(nameof(Asset), assetId);
 
-        var chunks = await _uow.DocumentRepository.GetDocumentChunksAsync(documentId);
+        var chunks = await _uow.AssetRepository.GetAssetChunksAsync(assetId);
 
         foreach (var chunk in chunks)
         {
@@ -41,14 +41,14 @@ public class DocumentProcessingJob : IDocumentProcessing
             await _vectorDatabaseService.InsertEmbedding(chunk.Id, embedding, new() 
             { 
                 { "text", chunk.Text }, 
-                { "document_id", document.Id.ToString() },
-                { "user_id", document.UserId.ToString() }
+                { "asset_id", asset.Id.ToString() },
+                { "user_id", asset.UserId.ToString() }
             });
         }
         
-        document.ProcessDocument();
+        asset.ProcessAsset();
         
-        _uow.GenericRepository.Update(document);
+        _uow.GenericRepository.Update(asset);
         await _uow.CommitAsync();
     }
 }
