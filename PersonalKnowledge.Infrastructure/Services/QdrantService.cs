@@ -49,9 +49,38 @@ public class QdrantService : IVectorDatabaseService
 
         return results.Select(r => new EmbeddingPayloadDto
         {
-            text = r.Payload["text"].StringValue,
-            asset_id = Guid.Parse(r.Payload["document_id"].StringValue),
-            user_id = Guid.Parse(r.Payload["user_id"].StringValue)
+            text = GetStringFromPayload(r.Payload, "text", "content"),
+            label = GetStringFromPayload(r.Payload, "label", "Label"),
+            asset_id = GetGuidFromPayload(r.Payload, "asset_id"),
+            user_id = GetGuidFromPayload(r.Payload, "user_id")
         }).ToList();
+    }
+
+    private string GetStringFromPayload(MapField<string, Value> payload, params string[] keys)
+    {
+        foreach (var key in keys)
+        {
+            if (payload.TryGetValue(key, out var value))
+            {
+                return value.StringValue;
+            }
+        }
+        return "";
+    }
+
+    private Guid GetGuidFromPayload(MapField<string, Value> payload, string key)
+    {
+        if (payload.TryGetValue(key, out var value) && Guid.TryParse(value.StringValue, out var guid))
+        {
+            return guid;
+        }
+        
+        // Fallback for asset_id if it was stored as document_id in older data
+        if (key == "asset_id" && payload.TryGetValue("document_id", out var docValue) && Guid.TryParse(docValue.StringValue, out var docGuid))
+        {
+            return docGuid;
+        }
+
+        return Guid.Empty;
     }
 }

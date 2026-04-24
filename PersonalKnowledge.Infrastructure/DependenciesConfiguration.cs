@@ -63,7 +63,9 @@ public static class DependenciesConfiguration
         services.AddDbContext<DataContext>(d => d.UseSqlServer(configuration.GetConnectionString("sqlserver")));
 
         services.AddScoped<ITextAssetProcessor, TextAssetProcessorJob>();
-        services.AddScoped<IVisualAssetProcessor, VisualAssetProcessorJob>();
+        services.AddScoped<IImageAssetProcessor, ImageAssetProcessorJob>();
+        services.AddScoped<IVideoAssetProcessor, VideoAssetProcessorJob>();
+        services.AddScoped<IAudioAssetProcessor, AudioAssetProcessorJob>();
         
         var storageType = configuration.GetValue<string>("Storage:Type") ?? "Local";
 
@@ -105,6 +107,7 @@ public static class DependenciesConfiguration
         services.AddScoped<IGenericRepository, GenericRepository>();
         services.AddScoped<IAssetRepository, AssetRepository>();
         services.AddScoped<IConversationRepository, ConversationRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         var openAiSettings = new OpenAiSettings
         {

@@ -18,7 +18,7 @@ public class EmbeddingsHandlerService : IEmbeddingsHandlerService
         _logger = logger;
     }
 
-    public async Task<ReadOnlyMemory<float>> GenerateEmbedding(string chunk)
+    public async Task<ReadOnlyMemory<float>> GenerateEmbedding(string chunk, string label = "")
     {
         try
         {
@@ -36,7 +36,11 @@ public class EmbeddingsHandlerService : IEmbeddingsHandlerService
 
             var client = _openAiClient.GetEmbeddingClient(modelOrDeployment);
 
-            var result = await client.GenerateEmbeddingsAsync(new List<string>() {chunk});
+            var embeddingInput = !string.IsNullOrWhiteSpace(label) 
+                ? $"Label: {label}; Content: {chunk}" 
+                : chunk;
+
+            var result = await client.GenerateEmbeddingsAsync(new List<string>() { embeddingInput });
             
             return result.Value.First().ToFloats();
         }

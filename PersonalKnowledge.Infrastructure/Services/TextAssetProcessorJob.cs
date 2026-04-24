@@ -34,13 +34,14 @@ public class TextAssetProcessorJob : ITextAssetProcessor
 
         foreach (var chunk in chunks)
         {
-            var embedding = await _embeddingsHandlerService.GenerateEmbedding(chunk.Text);
+            var embedding = await _embeddingsHandlerService.GenerateEmbedding(chunk.Text, asset.Label ?? "");
             
             _logger.LogInformation($"Embedding generated for chunk {chunk.Id}, {embedding}");
 
             await _vectorDatabaseService.InsertEmbedding(chunk.Id, embedding, new() 
             { 
                 { "text", chunk.Text }, 
+                { "label", asset.Label ?? "" },
                 { "asset_id", asset.Id.ToString() },
                 { "user_id", asset.UserId.ToString() }
             });

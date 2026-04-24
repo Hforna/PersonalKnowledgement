@@ -1,6 +1,6 @@
 namespace PersonalKnowledge.Domain.Services;
 
-public interface IVisualAssetProcessor
+public interface IVideoAssetProcessor
 {
     public Task ProcessAsset(Guid assetId);
 }

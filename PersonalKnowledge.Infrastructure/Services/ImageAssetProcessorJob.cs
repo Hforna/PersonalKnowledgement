@@ -4,18 +4,18 @@ using PersonalKnowledge.Domain.Services;
 
 namespace PersonalKnowledge.Infrastructure.Services;
 
-public class VisualAssetProcessorJob : IVisualAssetProcessor
+public class ImageAssetProcessorJob : IImageAssetProcessor
 {
     private readonly IUnitOfWork _uow;
     private readonly IStorageService _storageService;
     private readonly IEmbeddingsHandlerService _embeddingsHandlerService;
     private readonly IVectorDatabaseService _vectorDatabaseService;
-    private readonly ILogger<VisualAssetProcessorJob> _logger;
+    private readonly ILogger<ImageAssetProcessorJob> _logger;
     private readonly ILLMService _llmService;
 
-    public VisualAssetProcessorJob(IUnitOfWork uow, IStorageService storageService, 
+    public ImageAssetProcessorJob(IUnitOfWork uow, IStorageService storageService, 
         IEmbeddingsHandlerService embeddingsHandlerService, IVectorDatabaseService vectorDatabaseService, 
-        ILogger<VisualAssetProcessorJob> logger, ILLMService llmService)
+        ILogger<ImageAssetProcessorJob> logger, ILLMService llmService)
     {
         _uow = uow;
         _storageService = storageService;
@@ -45,13 +45,14 @@ public class VisualAssetProcessorJob : IVisualAssetProcessor
 
         var assetDescribed = await _llmService.DescribeImage(mediaUrl);
 
-        _logger.LogInformation($"Asset described: {assetDescribed}");
+        _logger.LogInformation($"Image asset described: {assetDescribed}");
 
-        var descriptionEmbedded = await _embeddingsHandlerService.GenerateEmbedding(assetDescribed);
+        var descriptionEmbedded = await _embeddingsHandlerService.GenerateEmbedding(assetDescribed, asset.Label ?? "");
 
         await _vectorDatabaseService.InsertEmbedding(asset.Id, descriptionEmbedded, new()
         {
             { "text", assetDescribed },
+            { "label", asset.Label ?? "" },
             { "asset_id", asset.Id.ToString() },
             { "user_id", asset.UserId.ToString() }
         });

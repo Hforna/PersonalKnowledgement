@@ -94,4 +94,16 @@ public class LLMService : ILLMService
         
         return response.Value.Content[0].Text ?? "I'm sorry, the response was empty.";
     }
+
+    public async Task<string> DescribeVideo(string videoUrl)
+    {
+        // Placeholder implementation for video description
+        return await Task.FromResult($"Video content at {videoUrl}");
+    }
+
+    public async Task<string> ProcessAudio(string audioUrl)
+    {
+        // Placeholder implementation for audio processing (e.g., transcription)
+        return await Task.FromResult($"Audio content at {audioUrl}");
+    }
 }
