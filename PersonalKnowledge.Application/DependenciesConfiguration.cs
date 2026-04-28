@@ -12,5 +12,6 @@ public static class DependenciesConfiguration
         services.AddScoped<IAssetHandlerService, PdfHandlerService>();
         services.AddScoped<IConversationService, ConversationService>();
         services.AddScoped<IMessageService, MessageService>();
+        services.AddScoped<IReceiverService, ReceiverService>();       
     }
 }

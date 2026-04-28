@@ -11,6 +11,7 @@ public interface IFileHandlerService
     (bool IsValid, FileExtension? Extension) IsValidFile(Stream file, string fileName);
     public string[] Chunk(string text, int chunkSize = 500, int overlap = 50);
     public MediaType GetMediaType(Stream fileStream);
+    public FileExtension? GetFileExtension(string mimeType);
 }
 
 public class FileHandlerService : IFileHandlerService
@@ -59,6 +60,11 @@ public class FileHandlerService : IFileHandlerService
         return fileExtension.HasValue 
             ? FileTypeIdentifiers.GetMediaType(fileExtension.Value) 
             : MediaType.DOCUMENT;
+    }
+    
+    public FileExtension? GetFileExtension(string mimeType)
+    {
+        return FileTypeIdentifiers.GetFileExtensionByMimeType(mimeType);
     }
 
     public string[] Chunk(string text, int chunkSize = 500, int overlap = 50)

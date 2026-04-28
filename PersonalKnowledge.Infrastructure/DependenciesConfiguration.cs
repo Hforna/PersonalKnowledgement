@@ -15,6 +15,8 @@ using PersonalKnowledge.Domain.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using Twilio;
 
 namespace PersonalKnowledge.Infrastructure;
 
@@ -108,6 +110,12 @@ public static class DependenciesConfiguration
         services.AddScoped<IAssetRepository, AssetRepository>();
         services.AddScoped<IConversationRepository, ConversationRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+
+        TwilioClient.Init(configuration.GetValue<string>("services:twilio:AccountSid"), configuration.GetValue<string>("services:twilio:AuthToken"));
+
+        services.AddScoped<IAssetSenderService, WhatsAppSenderService>(d => 
+            new WhatsAppSenderService(d.CreateScope().ServiceProvider.GetRequiredService<ILogger<WhatsAppSenderService>>(), 
+            configuration.GetValue<string>("services:twilio:PhoneSender")));
 
         var openAiSettings = new OpenAiSettings
         {

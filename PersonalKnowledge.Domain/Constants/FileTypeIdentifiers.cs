@@ -87,6 +87,17 @@ public static class FileTypeIdentifiers
         return ExtensionMap.TryGetValue(extension.ToLowerInvariant(), out var fileExtension) ? fileExtension : null;
     }
 
+    public static FileExtension? GetFileExtensionByMimeType(string mimeType)
+    {
+        return ExtensionMimeTypeMap.FirstOrDefault(x => x.Value == mimeType).Key;
+    }
+
+    public static MediaType GetMediaType(string mimeType)
+    {
+        var extension = GetFileExtensionByMimeType(mimeType);
+        return extension.HasValue ? GetMediaType(extension.Value) : MediaType.DOCUMENT;
+    }
+
     public static MediaType GetMediaType(FileExtension extension)
     {
         return ExtensionCategoryMap.TryGetValue(extension, out var mediaType) ? mediaType : MediaType.DOCUMENT;

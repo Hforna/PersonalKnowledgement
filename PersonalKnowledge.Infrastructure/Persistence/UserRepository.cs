@@ -8,6 +8,6 @@ public class UserRepository(DataContext context) : BaseRepository(context), IUse
 {
     public async Task<User?> GetUserByPhone(string phone)
     {
-        return await _context.Users.FirstOrDefaultAsync(d => d.PhoneNumber.Equals(phone));
+        return await _context.Users.FirstOrDefaultAsync(d => d.PhoneNumber == phone);
     }
 }

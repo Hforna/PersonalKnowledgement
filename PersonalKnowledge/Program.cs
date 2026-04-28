@@ -99,4 +99,10 @@ catch (Exception ex)
     Console.WriteLine($"[WARNING] Could not clear Hangfire jobs on startup: {ex.Message}");
 }
 
+app.Use(async (context, next) =>
+{
+    context.Request.EnableBuffering();
+    await next();
+});
+
 app.Run();

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using OpenAI;
 using OpenAI.Chat;
 using PersonalKnowledge.Domain.Services;
@@ -8,11 +9,13 @@ public class LLMService : ILLMService
 {
     private readonly OpenAIClient _openAiClient;
     private readonly OpenAiSettings _openAiSettings;
+    private readonly ILogger<LLMService> _logger;
     
-    public LLMService(OpenAIClient openAiClient, OpenAiSettings openAiSettings)
+    public LLMService(OpenAIClient openAiClient, OpenAiSettings openAiSettings, ILogger<LLMService> logger)
     {
         _openAiClient = openAiClient;
         _openAiSettings = openAiSettings;
+        _logger = logger;       
     }
     
     public async Task<string> GenerateResponseByContext(string context, string prompt)
@@ -105,5 +108,28 @@ public class LLMService : ILLMService
     {
         // Placeholder implementation for audio processing (e.g., transcription)
         return await Task.FromResult($"Audio content at {audioUrl}");
+    }
+
+    public async Task<bool> IsTextQuestion(string text)
+    {
+        var modelOrDeployment = _openAiSettings.IsAzureOpenAI 
+            ? _openAiSettings.ChatDeploymentName 
+            : _openAiSettings.ChatModel;
+        
+        var client = _openAiClient.GetChatClient(modelOrDeployment);
+
+        var chatMessage = new ChatMessage[]
+        {
+            new SystemChatMessage("You are an expert assistant. Determine if the following text is a question or not. you need to respond only with true or false. just (true) or (false) no dots or anything like that so i can just parse it to bool"),
+            new UserChatMessage(ChatMessageContentPart.CreateTextPart(text))
+        };
+
+        var response = await client.CompleteChatAsync(chatMessage);
+
+        var isQuestion = bool.TryParse(response.Value.Content[0].Text, out var result) && result;
+        
+        _logger.LogInformation($"Is question llm response: {isQuestion}");
+
+        return isQuestion;
     }
 }

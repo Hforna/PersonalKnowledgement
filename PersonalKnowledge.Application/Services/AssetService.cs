@@ -103,9 +103,13 @@ public class AssetService : IAssetService
                 BackgroundJob.Enqueue<ITextAssetProcessor>(d => d.ProcessAsset(asset.Id));
                 break;
             case MediaType.IMAGE:
+                BackgroundJob.Enqueue<IImageAssetProcessor>(m => m.ProcessAsset(asset.Id));
+                break;
             case MediaType.VIDEO:
+                BackgroundJob.Enqueue<IVideoAssetProcessor>(m => m.ProcessAsset(asset.Id));
+                break;
             case MediaType.AUDIO:
-                BackgroundJob.Enqueue<IVisualAssetProcessor>(m => m.ProcessAsset(asset.Id));
+                BackgroundJob.Enqueue<IAudioAssetProcessor>(m => m.ProcessAsset(asset.Id));
                 break;
         }
     }
