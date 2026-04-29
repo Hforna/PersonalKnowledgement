@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Logging;
 using OpenAI;
 using OpenAI.Chat;
+using OpenAI.Audio;
 using PersonalKnowledge.Domain.Services;
+using System.Net.Http;
 
 namespace PersonalKnowledge.Infrastructure.Services;
 
@@ -10,12 +12,14 @@ public class LLMService : ILLMService
     private readonly OpenAIClient _openAiClient;
     private readonly OpenAiSettings _openAiSettings;
     private readonly ILogger<LLMService> _logger;
+    private readonly IHttpClientFactory _httpClientFactory;
     
-    public LLMService(OpenAIClient openAiClient, OpenAiSettings openAiSettings, ILogger<LLMService> logger)
+    public LLMService(OpenAIClient openAiClient, OpenAiSettings openAiSettings, ILogger<LLMService> logger, IHttpClientFactory httpClientFactory)
     {
         _openAiClient = openAiClient;
         _openAiSettings = openAiSettings;
         _logger = logger;       
+        _httpClientFactory = httpClientFactory;
     }
     
     public async Task<string> GenerateResponseByContext(string context, string prompt)
@@ -106,8 +110,47 @@ public class LLMService : ILLMService
 
     public async Task<string> ProcessAudio(string audioUrl)
     {
-        // Placeholder implementation for audio processing (e.g., transcription)
-        return await Task.FromResult($"Audio content at {audioUrl}");
+        try
+        {
+            var modelOrDeployment = _openAiSettings.IsAzureOpenAI 
+                ? _openAiSettings.ChatDeploymentName 
+                : "whisper-1"; // Whisper model name
+
+            var client = _openAiClient.GetAudioClient(modelOrDeployment);
+
+            Stream audioStream;
+            string fileName;
+
+            if (audioUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            {
+                var httpClient = _httpClientFactory.CreateClient();
+                audioStream = await httpClient.GetStreamAsync(audioUrl);
+                fileName = Path.GetFileName(new Uri(audioUrl).LocalPath);
+                if (string.IsNullOrEmpty(fileName)) fileName = "audio.mp3";
+            }
+            else if (audioUrl.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
+            {
+                var filePath = new Uri(audioUrl).LocalPath;
+                audioStream = File.OpenRead(filePath);
+                fileName = Path.GetFileName(filePath);
+            }
+            else
+            {
+                audioStream = File.OpenRead(audioUrl);
+                fileName = Path.GetFileName(audioUrl);
+            }
+
+            using (audioStream)
+            {
+                var response = await client.TranscribeAudioAsync(audioStream, fileName);
+                return response.Value.Text;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error transcribing audio from {AudioUrl}", audioUrl);
+            return $"Error transcribing audio: {ex.Message}";
+        }
     }
 
     public async Task<bool> IsTextQuestion(string text)

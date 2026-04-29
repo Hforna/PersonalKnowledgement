@@ -36,7 +36,7 @@ public class QdrantService : IVectorDatabaseService
         await _qdrantClient.UpsertAsync(CollectionName, new[] { point });
     }
 
-    public async Task<List<EmbeddingPayloadDto>> SearchSimilar(ReadOnlyMemory<float> embedding, Guid? userId = null, int limit = 5)
+    public async Task<List<EmbeddingPayloadDto>> SearchSimilar(ReadOnlyMemory<float> embedding, Guid? userId = null, int limit = 30)
     {
         Filter? filter = null;
         if (userId.HasValue)
@@ -75,7 +75,6 @@ public class QdrantService : IVectorDatabaseService
             return guid;
         }
         
-        // Fallback for asset_id if it was stored as document_id in older data
         if (key == "asset_id" && payload.TryGetValue("document_id", out var docValue) && Guid.TryParse(docValue.StringValue, out var docGuid))
         {
             return docGuid;

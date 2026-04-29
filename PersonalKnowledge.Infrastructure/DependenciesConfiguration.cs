@@ -160,6 +160,7 @@ public static class DependenciesConfiguration
         services.AddScoped<IVectorDatabaseService, QdrantService>();
         services.AddScoped<IEmbeddingsHandlerService, EmbeddingsHandlerService>();
         services.AddScoped<ILLMService, LLMService>();
+        services.AddHttpClient();
     }
 }
 
