@@ -120,15 +120,19 @@ public class LLMService : ILLMService
 
         var chatMessage = new ChatMessage[]
         {
-            new SystemChatMessage("You are an expert assistant. Determine if the following text is a question or not. you need to respond only with true or false. just (true) or (false) no dots or anything like that so i can just parse it to bool"),
-            new UserChatMessage(ChatMessageContentPart.CreateTextPart(text))
+            new SystemChatMessage("Determine if the user's input is a question. Respond ONLY with 'true' if it is a question or 'false' if it is not. A question may be identified by its structure (e.g., starting with 'what', 'how', 'who', 'is', 'can', 'quais', 'como', 'onde', 'quem', etc.) or by an interrogation mark. Even without a question mark, if it sounds like a request for information, return 'true'."),
+            new UserChatMessage(text)
         };
 
         var response = await client.CompleteChatAsync(chatMessage);
 
-        var isQuestion = bool.TryParse(response.Value.Content[0].Text, out var result) && result;
+        var responseText = response.Value.Content[0].Text?.Trim().ToLower() ?? string.Empty;
         
-        _logger.LogInformation($"Is question llm response: {isQuestion}");
+        _logger.LogInformation($"LLM Raw response for IsTextQuestion: '{responseText}'");
+
+        var isQuestion = responseText.Contains("true");
+        
+        _logger.LogInformation($"Is question result: {isQuestion}");
 
         return isQuestion;
     }

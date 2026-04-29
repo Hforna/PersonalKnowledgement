@@ -96,5 +96,36 @@ public class ReceiverService(IUnitOfWork uow, ILogger<IReceiverService> logger,
                 }
             }
         }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(receiveDto.Body)) return;
+
+            var bodyAsset = new Asset()
+            {
+                MediaType = MediaType.BODY,
+                UserId = user.Id,
+                FileName = "body",
+                FileType = FileExtension.Txt,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Label = receiveDto.Body
+            };
+
+            await _uow.GenericRepository.AddAsync(bodyAsset);
+
+            var chunk = new Chunk()
+            {
+                AssetId = bodyAsset.Id,
+                Text = receiveDto.Body,
+                ChunkIndex = 0,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            await _uow.GenericRepository.AddAsync(chunk);
+            await _uow.CommitAsync();
+
+            BackgroundJob.Enqueue<ITextAssetProcessor>(d => d.ProcessAsset(bodyAsset.Id));
+        }
     }
 }
