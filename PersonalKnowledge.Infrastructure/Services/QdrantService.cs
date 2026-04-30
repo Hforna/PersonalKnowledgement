@@ -45,7 +45,7 @@ public class QdrantService : IVectorDatabaseService
             filter.Must.Add(new Condition { Field = new FieldCondition { Key = "user_id", Match = new Match { Text = userId.Value.ToString() } } });
         }
 
-        var results = await _qdrantClient.SearchAsync(CollectionName, embedding.ToArray(), filter: filter, limit: (ulong)limit);
+        var results = await _qdrantClient.SearchAsync(CollectionName, embedding.ToArray(), filter: filter, limit: 50);
 
         return results.Select(r => new EmbeddingPayloadDto
         {

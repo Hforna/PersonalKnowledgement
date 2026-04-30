@@ -68,7 +68,7 @@ public class MessageService(
             };
         }
 
-        var responseMessage = await _llmService.GenerateResponseByContext($"{context}", request.Message);
+        var responseMessage = await _llmService.GenerateResponseByContext($"{context}", request.Message, user.Id);
 
         return new ChatResponse
         {
@@ -94,7 +94,7 @@ public class MessageService(
             };
         }
         
-        var response = await _llmService.GenerateResponseByContext(context, text);
+        var response = await _llmService.GenerateResponseByContext(context, text, userId);
         
         return new ChatResponse
         {

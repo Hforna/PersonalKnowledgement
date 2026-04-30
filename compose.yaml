@@ -4,7 +4,7 @@
     container_name: personalknowledge_sqlserver
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: ""
+      SA_PASSWORD: "hG5rzck2vy3cHai"
     ports:
       - "1433:1433"
     volumes:

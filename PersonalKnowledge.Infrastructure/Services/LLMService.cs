@@ -2,8 +2,10 @@ using Microsoft.Extensions.Logging;
 using OpenAI;
 using OpenAI.Chat;
 using OpenAI.Audio;
+using PersonalKnowledge.Domain.Enums;
 using PersonalKnowledge.Domain.Services;
 using System.Net.Http;
+using System.Text.Json;
 
 namespace PersonalKnowledge.Infrastructure.Services;
 
@@ -11,33 +13,36 @@ public class LLMService : ILLMService
 {
     private readonly OpenAIClient _openAiClient;
     private readonly OpenAiSettings _openAiSettings;
+    private readonly ISpotifyService _spotifyService;
     private readonly ILogger<LLMService> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IUnitOfWork _uow;
     
-    public LLMService(OpenAIClient openAiClient, OpenAiSettings openAiSettings, ILogger<LLMService> logger, IHttpClientFactory httpClientFactory)
+    public LLMService(OpenAIClient openAiClient, OpenAiSettings openAiSettings, ILogger<LLMService> logger, IHttpClientFactory httpClientFactory, ISpotifyService spotifyService, IUnitOfWork uow)
     {
         _openAiClient = openAiClient;
         _openAiSettings = openAiSettings;
         _logger = logger;       
         _httpClientFactory = httpClientFactory;
+        _spotifyService = spotifyService;
+        _uow = uow;
     }
     
-    public async Task<string> GenerateResponseByContext(string context, string prompt)
+    public async Task<string> GenerateResponseByContext(string context, string prompt, Guid userId)
+    {
+        var messages = await ProcessText(context, prompt, userId);
+        return messages.Last().Content[0].Text ?? "I'm sorry, the response was empty.";
+    }
+
+    public async Task<List<ChatMessage>> ProcessText(string context, string prompt, Guid userId)
     {
         var modelOrDeployment = _openAiSettings.IsAzureOpenAI 
             ? _openAiSettings.ChatDeploymentName 
             : _openAiSettings.ChatModel;
 
-        Console.WriteLine($"[DEBUG_LOG] Getting ChatClient for {modelOrDeployment} (Azure: {_openAiSettings.IsAzureOpenAI})");
         var client = _openAiClient.GetChatClient(modelOrDeployment);
 
-        if (client == null)
-        {
-            Console.WriteLine("[DEBUG_LOG] ChatClient is NULL");
-            return "I'm sorry, the chat client could not be initialized.";
-        }
-
-        var messages = new ChatMessage[]
+        var messages = new List<ChatMessage>
         {
             new SystemChatMessage("You are an expert assistant. Use the following context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Keep the answer concise and strictly relevant to the provided context. Remember to return the response in the language that was found in the context."),
             new UserChatMessage($"""
@@ -49,28 +54,78 @@ public class LLMService : ILLMService
                                  """)
         };
 
-        Console.WriteLine("[DEBUG_LOG] Calling CompleteChatAsync...");
-        var response = await client.CompleteChatAsync(messages);
+        var options = new ChatCompletionOptions();
+        options.Tools.Add(ChatTool.CreateFunctionTool(
+                "AddToSpotifyPlaylist",
+                "Add a specific music to a determined spotify playlist.",
+                functionParameters: BinaryData.FromObjectAsJson(new
+                {
+                    type = "object",
+                    properties = new
+                    {
+                        playlistName = new { type = "string", description = "The name of the playlist to add the song to." },
+                        songName = new { type = "string", description = "The name of the song to add to the playlist." },
+                        artistName = new { type = "string", description = "The name of the artist of the song." }
+                    },
+                    required = new[] { "playlistName", "songName" }
+                })
+            ));
 
-        if (response == null)
+        var requiresAction = false;
+
+        do
         {
-            Console.WriteLine("[DEBUG_LOG] response is NULL");
-            return "I'm sorry, the AI response was null.";
-        }
+            var response = await client.CompleteChatAsync(messages, options);
 
-        if (response.Value == null)
+            switch (response.Value.FinishReason)
+            {
+                case ChatFinishReason.Stop:
+                    requiresAction = false;
+                    messages.Add(new AssistantChatMessage(response.Value));
+                    break;
+                case ChatFinishReason.ToolCalls:
+                    messages.Add(new AssistantChatMessage(response.Value));
+
+                    foreach (var toolCall in response.Value.ToolCalls)
+                    {
+                        var toolMessage = await ExecuteTools(toolCall, userId);
+                        messages.Add(new ToolChatMessage(toolCall.Id, toolMessage));
+                    }
+                    
+                    requiresAction = true;
+                    break;
+            }
+        } while (requiresAction);
+
+        return messages;
+    }
+
+    private async Task<string> ExecuteTools(ChatToolCall call, Guid userId)
+    {
+        if (call.FunctionName.Equals("AddToSpotifyPlaylist", StringComparison.OrdinalIgnoreCase))
         {
-            Console.WriteLine("[DEBUG_LOG] response.Value is NULL");
-            return "I'm sorry, the AI response value was null.";
-        }
+            using var jsonDocument = JsonDocument.Parse(call.FunctionArguments);
+            var playlistName = jsonDocument.RootElement.TryGetProperty("playlistName", out var playlistNameElement);
+            var songName = jsonDocument.RootElement.TryGetProperty("songName", out var songNameElement);
+            var artistName = jsonDocument.RootElement.TryGetProperty("artistName", out var artistNameElement);
 
-        if (response.Value.Content == null || response.Value.Content.Count == 0)
-        {
-            Console.WriteLine("[DEBUG_LOG] response.Value.Content is NULL or EMPTY");
-            return "I'm sorry, I couldn't generate a response.";
-        }
+            var tool = await _uow.ToolsRepository.GetUserToolAsync(userId, ToolType.Spotify);
+            if (tool == null || string.IsNullOrEmpty(tool.AccessToken))
+            {
+                return "Spotify tool not configured or access token missing.";
+            }
 
-        return response.Value.Content[0].Text ?? "I'm sorry, the response was empty.";
+            var spotifyUserId = tool.ToolAccountId;
+            var accessToken = tool.AccessToken;
+            
+            var selectedPlaylist = await _spotifyService.GetPlaylistIdByName(playlistNameElement.GetString(), spotifyUserId, accessToken);
+
+            if (string.IsNullOrEmpty(selectedPlaylist))
+                return "Playlist provided not found by api";
+
+        }
+        
+        return string.Empty;
     }
 
     public async Task<string> DescribeImage(string imageUrl)

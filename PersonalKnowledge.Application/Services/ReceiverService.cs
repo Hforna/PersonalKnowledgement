@@ -36,21 +36,8 @@ public class ReceiverService(IUnitOfWork uow, ILogger<IReceiverService> logger,
             _logger.LogError("User with phone {Phone} sent from receiver not found", receiveDto.From);
         }
         
-        var isQuestion = await _llmService.IsTextQuestion(receiveDto.Body);
-
-        if (isQuestion)
-        {
-            var response = await _messageService.GenerateMessageByText(receiveDto.Body, user.Id);
-
-            var responseDto = new ChatResponseToSenderDto() { Message = response.Message, Phone = receiveDto.From };
-            
-            _logger.LogInformation("Response: {Response}", responseDto);
-            
-            await _senderService.Send(responseDto);
-
-            return;
-        }
-
+        var conversation = _uow.ConversationRepository.
+        
         if (receiveDto.MediaReceivedDtos.Count > 0)
         {
             foreach (var mediaDto in receiveDto.MediaReceivedDtos)
@@ -96,36 +83,29 @@ public class ReceiverService(IUnitOfWork uow, ILogger<IReceiverService> logger,
                 }
             }
         }
-        else
+
+        if (!string.IsNullOrEmpty(receiveDto.Body))
         {
-            if (string.IsNullOrWhiteSpace(receiveDto.Body)) return;
-
-            var bodyAsset = new Asset()
+            var message = new Message()
             {
-                MediaType = MediaType.BODY,
-                UserId = user.Id,
-                FileName = "body",
-                FileType = FileExtension.Txt,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                Label = receiveDto.Body
-            };
+                Content = receiveDto.Body,
+                ConversationId = 
+            }
+            var isQuestion = await _llmService.IsTextQuestion(receiveDto.Body);
 
-            await _uow.GenericRepository.AddAsync(bodyAsset);
-
-            var chunk = new Chunk()
+            if (isQuestion)
             {
-                AssetId = bodyAsset.Id,
-                Text = receiveDto.Body,
-                ChunkIndex = 0,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+                var response = await _messageService.GenerateMessageByText(receiveDto.Body, user.Id);
 
-            await _uow.GenericRepository.AddAsync(chunk);
-            await _uow.CommitAsync();
+                var responseDto = new ChatResponseToSenderDto() { Message = response.Message, Phone = receiveDto.From };
+            
+                _logger.LogInformation("Response: {Response}", responseDto);
+            
+                await _senderService.Send(responseDto);
 
-            BackgroundJob.Enqueue<ITextAssetProcessor>(d => d.ProcessAsset(bodyAsset.Id));
+                return;
+            }
+
         }
     }
 }

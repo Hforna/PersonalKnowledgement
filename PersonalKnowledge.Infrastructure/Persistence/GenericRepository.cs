@@ -16,6 +16,11 @@ public class GenericRepository(DataContext context) : BaseRepository(context), I
         return await _context.Set<T>().Where(d => ids.Contains(d.Id)).ToListAsync();
     }
 
+    public async Task<List<T>> GetAllAsync<T>() where T : Entity
+    {
+        return await _context.Set<T>().ToListAsync();
+    }
+
     public async Task AddAsync<T>(T entity) where T : Entity
     {
         await _context.Set<T>().AddAsync(entity);       

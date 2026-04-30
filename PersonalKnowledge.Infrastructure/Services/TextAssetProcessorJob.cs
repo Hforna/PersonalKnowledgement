@@ -51,5 +51,10 @@ public class TextAssetProcessorJob : ITextAssetProcessor
         
         _uow.GenericRepository.Update(asset);
         await _uow.CommitAsync();
+
+        if (asset.FileType == FileExtension.Txt)
+        {
+            
+        }
     }
 }

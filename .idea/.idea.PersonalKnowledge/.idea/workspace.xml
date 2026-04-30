@@ -9,28 +9,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ba7d3e2c-ea44-4a2f-944e-a533658a0fe0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.PersonalKnowledge/.idea/dataSources.local.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.PersonalKnowledge/.idea/dataSources.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.PersonalKnowledge/.idea/dataSources/5710f36a-464b-412b-b19f-87897a7c68bf.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.PersonalKnowledge/.idea/dataSources/5710f36a-464b-412b-b19f-87897a7c68bf/storage_v2/_src_/database/PersonalKnowledge._qmUtA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.PersonalKnowledge/.idea/dataSources/5710f36a-464b-412b-b19f-87897a7c68bf/storage_v2/_src_/database/PersonalKnowledge._qmUtA/schema/INFORMATION_SCHEMA.NBgcMw.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.PersonalKnowledge/.idea/dataSources/5710f36a-464b-412b-b19f-87897a7c68bf/storage_v2/_src_/database/PersonalKnowledge._qmUtA/schema/sys.zb4BAA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.PersonalKnowledge/.idea/data_source_mapping.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.PersonalKnowledge/.idea/queries/Query.sql" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PersonalKnowledge/.idea/queries/Query.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.PersonalKnowledge/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PersonalKnowledge/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.PersonalKnowledge/Docker/compose.generated.override.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PersonalKnowledge/Docker/compose.generated.override.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Application/DependenciesConfiguration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Application/DependenciesConfiguration.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Application/PersonalKnowledge.Application.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Application/PersonalKnowledge.Application.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Application/Services/DocumentService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Application/Services/DocumentService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Application/Services/DocumentService.cs.new" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/Document.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/Document.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/User.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Application/Dtos/ReceiveDto.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Application/Services/MessageService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Application/Services/MessageService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Application/Services/ReceiverService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Application/Services/ReceiverService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/Conversation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/Conversation.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Domain/PersonalKnowledge.Domain.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Domain/PersonalKnowledge.Domain.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IDocumentRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IDocumentRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IGenericRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IGenericRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Domain/Services/ILLMService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Domain/Services/ILLMService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IUnitOfWork.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IUnitOfWork.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IVectorDatabaseService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IVectorDatabaseService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/DependenciesConfiguration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/DependenciesConfiguration.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Migrations/DataContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Migrations/DataContextModelSnapshot.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/DataContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/DataContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/DocumentRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/DocumentRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/GenericRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/GenericRepository.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/UnitOfWork.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/UnitOfWork.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/PersonalKnowledge.Infrastructure.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/PersonalKnowledge.Infrastructure.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/DocumentProcessingJob.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/DocumentProcessingJob.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/LLMService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/LLMService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/QdrantService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/QdrantService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge/Controllers/DocumentsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge/Controllers/DocumentsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge/PersonalKnowledge.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge/PersonalKnowledge.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PersonalKnowledge/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/TextAssetProcessorJob.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/TextAssetProcessorJob.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PersonalKnowledge/Controllers/WebhooksController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PersonalKnowledge/Controllers/WebhooksController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/compose.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -53,7 +59,7 @@
     <option name="firstShow" value="false" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="83" />
+    <option name="cachedIndexableFilesCount" value="53" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -66,55 +72,58 @@
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Application/PdfHandlerService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Application/Requests/SendMessageRequest.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Application/Responses/ChatResponse.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Application/Services/DocumentService.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Application/Services/MessageService.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Application/Services/MessageService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Application/Services/MessageProcessorJob.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Application/Services/MessageService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Application/Services/ReceiverService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Application/Services/ReceiverService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Application/Services/ReceiverService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Application/Services/ReceiverService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Application/Services/ReceiverService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Dtos/ChatResponseToSenderDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Dtos/EmbeddingPayloadDto.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Dtos/TwilioWhatsAppRequestDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/Chunk.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/Conversation.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/Document.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/Entity.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/Message.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/MessageSource.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/Tools.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/Topic.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Entities/User.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Enums/DocumentStatus.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Enums/DocumentType.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Enums/MediaType.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Exceptions/ApplicationException.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Exceptions/DocumentException.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Exceptions/DocumentHandlerNotFoundException.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Exceptions/FileProcessingException.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/GlobalUsings.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IDocumentProcessing.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IDocumentRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IAssetSenderService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IEmbeddingsHandlerService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Domain/Services/IGenericRepository.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IGenericRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Domain/Services/IGenericRepository.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Domain/Services/IMessageProcessor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Services/ISpotifyService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IStorageService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IUnitOfWork.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IUserRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Domain/Services/IVectorDatabaseService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/DependenciesConfiguration.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/BaesRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/Configurations/AuditableEntityConfigurations.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/DataContext.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/DocumentRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/GenericRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/UnitOfWork.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Persistence/UserRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/AzureBlobStorageService.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/DocumentProcessingJob.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/EmbeddingsHandlerService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Infrastructure/Services/LLMService.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Infrastructure/Services/LLMService.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Infrastructure/Services/LLMService.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Infrastructure/Services/LLMService.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/LocalFileStorageService.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Infrastructure/Services/QdrantService.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Infrastructure/Services/QdrantService.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/QdrantService.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Infrastructure/Services/QdrantService.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Infrastructure/Services/QdrantService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/SpotifyService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Infrastructure/Services/SpotifyService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/henrique/Projects/PersonalKnowledge/PersonalKnowledge/PersonalKnowledge.Infrastructure/Services/SpotifyService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/WhatsAppSenderService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge.Workers/WorkerConfiguration.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/PersonalKnowledge/Controllers/DocumentsController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/PersonalKnowledge/Controllers/WebhooksController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge/Middleware/GlobalExceptionHandlerMiddleware.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge/Results/ApiResult.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PersonalKnowledge/Results/ResultExtensions.cs" root0="FORCE_HIGHLIGHTING" />
@@ -137,29 +146,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Launch Settings Profile.PersonalKnowledge: https.executor&quot;: &quot;Run&quot;,
-    &quot;Docker.PersonalKnowledge/Dockerfile.executor&quot;: &quot;Run&quot;,
-    &quot;Docker.compose.yaml: Compose Deployment.executor&quot;: &quot;Debug&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;Docker&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Launch Settings Profile.PersonalKnowledge: https.executor": "Run",
+    "Docker.PersonalKnowledge/Dockerfile.executor": "Run",
+    "Docker.compose.yaml: Compose Deployment.executor": "Debug",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "editor.preferences.inline.completion",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="Docker.compose.yaml: Compose Deployment">
     <configuration name="PersonalKnowledge: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/PersonalKnowledge/PersonalKnowledge.csproj" />
@@ -198,7 +207,7 @@
         <settings>
           <option name="imageTag" value="personalknowledge" />
           <option name="containerName" value="personalknowledge" />
-          <option name="contextFolderPath" value="$PROJECT_DIR$" />
+          <option name="contextFolderPath" value="." />
           <option name="portBindings">
             <list>
               <DockerPortBindingImpl>
@@ -214,11 +223,21 @@
       <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
       <method v="2" />
     </configuration>
-    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
       <deployment type="docker-compose.yml">
-        <settings />
+        <settings>
+          <option name="sourceFilePath" value="PersonalKnowledge/Dockerfile" />
+        </settings>
       </deployment>
       <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="docker-image">
+      <deployment type="docker-image">
+        <settings>
+          <option name="containerName" value="" />
+        </settings>
+      </deployment>
       <method v="2" />
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
@@ -237,6 +256,12 @@
       <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue=".NET Launch Settings Profile.PersonalKnowledge: http" />
+      <item itemvalue=".NET Launch Settings Profile.PersonalKnowledge: https" />
+      <item itemvalue="Docker.compose.yaml: Compose Deployment" />
+      <item itemvalue="Docker.PersonalKnowledge/Dockerfile" />
+    </list>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -267,7 +292,14 @@
       <workItem from="1776200167875" duration="2731000" />
       <workItem from="1776209532394" duration="10573000" />
       <workItem from="1776238594516" duration="2881000" />
-      <workItem from="1776273369041" duration="11149000" />
+      <workItem from="1776273369041" duration="29140000" />
+      <workItem from="1776452643907" duration="9930000" />
+      <workItem from="1776976643161" duration="690000" />
+      <workItem from="1776977454866" duration="6764000" />
+      <workItem from="1777013793572" duration="521000" />
+      <workItem from="1777014490711" duration="5996000" />
+      <workItem from="1777064796741" duration="45901000" />
+      <workItem from="1777504692946" duration="16557000" />
     </task>
     <servers />
   </component>
@@ -294,32 +326,6 @@
           <option name="timeStamp" value="3" />
         </breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/PersonalKnowledge.Application/Services/DocumentService.cs</url>
-          <line>84</line>
-          <properties documentPath="$PROJECT_DIR$/PersonalKnowledge.Application/Services/DocumentService.cs" containingFunctionPresentation="Method 'UploadFile'">
-            <startOffsets>
-              <option value="2982" />
-            </startOffsets>
-            <endOffsets>
-              <option value="3053" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/DocumentProcessingJob.cs</url>
-          <line>48</line>
-          <properties documentPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/DocumentProcessingJob.cs" containingFunctionPresentation="Method 'ProcessDocument'">
-            <startOffsets>
-              <option value="1944" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1971" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="24" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/PersonalKnowledge/Controllers/AuthController.cs</url>
           <line>19</line>
           <properties documentPath="$PROJECT_DIR$/PersonalKnowledge/Controllers/AuthController.cs" containingFunctionPresentation="Method 'Register'">
@@ -333,19 +339,6 @@
           <option name="timeStamp" value="26" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/PersonalKnowledge/Controllers/DocumentsController.cs</url>
-          <line>23</line>
-          <properties documentPath="$PROJECT_DIR$/PersonalKnowledge/Controllers/DocumentsController.cs" containingFunctionPresentation="Method 'UploadDocument'">
-            <startOffsets>
-              <option value="655" />
-            </startOffsets>
-            <endOffsets>
-              <option value="721" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="27" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/PersonalKnowledge/Controllers/ConversationsController.cs</url>
           <line>23</line>
           <properties documentPath="$PROJECT_DIR$/PersonalKnowledge/Controllers/ConversationsController.cs" containingFunctionPresentation="Method 'SendMessageToConversation'">
@@ -357,6 +350,58 @@
             </endOffsets>
           </properties>
           <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/PersonalKnowledge/Controllers/AssetsController.cs</url>
+          <line>24</line>
+          <properties documentPath="$PROJECT_DIR$/PersonalKnowledge/Controllers/AssetsController.cs" containingFunctionPresentation="Method 'UploadAsset'">
+            <startOffsets>
+              <option value="679" />
+            </startOffsets>
+            <endOffsets>
+              <option value="745" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/PersonalKnowledge/Controllers/WebhooksController.cs</url>
+          <line>57</line>
+          <properties documentPath="$PROJECT_DIR$/PersonalKnowledge/Controllers/WebhooksController.cs" containingFunctionPresentation="Method 'TwilioWebhook'">
+            <startOffsets>
+              <option value="2145" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2157" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="44" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/LLMService.cs</url>
+          <line>32</line>
+          <properties documentPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/LLMService.cs" containingFunctionPresentation="Method 'GenerateResponseByContext'">
+            <startOffsets>
+              <option value="1169" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1227" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="47" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/TextAssetProcessorJob.cs</url>
+          <line>29</line>
+          <properties documentPath="$PROJECT_DIR$/PersonalKnowledge.Infrastructure/Services/TextAssetProcessorJob.cs" containingFunctionPresentation="Method 'ProcessAsset'">
+            <startOffsets>
+              <option value="1142" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1285" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="48" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

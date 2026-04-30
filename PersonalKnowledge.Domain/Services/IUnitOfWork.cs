@@ -6,6 +6,7 @@ namespace PersonalKnowledge.Domain.Services
         public IAssetRepository AssetRepository { get; }
         public IConversationRepository ConversationRepository { get; }
         public IUserRepository UserRepository { get; }
+        public IToolsRepository ToolsRepository { get; }
         Task<int> SaveChangesAsync();
         Task<bool> BeginTransactionAsync();
         Task<bool> CommitAsync();

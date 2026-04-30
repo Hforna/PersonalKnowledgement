@@ -1,4 +1,4 @@
-namespace PersonalKnowledge.Application.Dtos;
+namespace PersonalKnowledge.Domain.Dtos;
 
 public class ReceiveDto
 {

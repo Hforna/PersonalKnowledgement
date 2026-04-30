@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using PersonalKnowledge.Application.Dtos;
 using PersonalKnowledge.Application.Services;
 using PersonalKnowledge.Domain.Dtos;
 

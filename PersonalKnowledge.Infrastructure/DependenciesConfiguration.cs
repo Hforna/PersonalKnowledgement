@@ -24,6 +24,23 @@ public static class DependenciesConfiguration
 {
     public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddIdentityAndAuth(configuration);
+        services.AddPersistence(configuration);
+        services.AddProcessors();
+        services.AddStorage(configuration);
+        services.AddRepositories();
+        services.AddExternalServices(configuration);
+        services.AddAiServices(configuration);
+        services.AddToolsServices(configuration);
+
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<IRequestService, RequestService>();
+        services.AddHttpClient();
+    }
+
+    private static void AddIdentityAndAuth(this IServiceCollection services, IConfiguration configuration)
+    {
         services.AddIdentity<User, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -57,24 +74,30 @@ public static class DependenciesConfiguration
                 IssuerSigningKey = new SymmetricSecurityKey(key)
             };
         });
+    }
 
-        services.AddScoped<ITokenService, TokenService>();
-        services.AddHttpContextAccessor();
-        services.AddScoped<IRequestService, RequestService>();
-
+    private static void AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    {
         services.AddDbContext<DataContext>(d => d.UseSqlServer(configuration.GetConnectionString("sqlserver")));
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+    }
 
+    private static void AddProcessors(this IServiceCollection services)
+    {
         services.AddScoped<ITextAssetProcessor, TextAssetProcessorJob>();
         services.AddScoped<IImageAssetProcessor, ImageAssetProcessorJob>();
         services.AddScoped<IVideoAssetProcessor, VideoAssetProcessorJob>();
         services.AddScoped<IAudioAssetProcessor, AudioAssetProcessorJob>();
-        
+    }
+
+    private static void AddStorage(this IServiceCollection services, IConfiguration configuration)
+    {
         var storageType = configuration.GetValue<string>("Storage:Type") ?? "Local";
 
         if (storageType.Equals("Azure", StringComparison.OrdinalIgnoreCase))
         {
             var azureConnectionString = configuration.GetConnectionString("AzureBlobStorage");
-            
+
             if (string.IsNullOrEmpty(azureConnectionString))
                 throw new InvalidOperationException("AzureBlobStorage connection string is not configured");
 
@@ -89,7 +112,7 @@ public static class DependenciesConfiguration
             );
 
             var blobContainerClient = new BlobContainerClient(uri, credential);
-            
+
             services.AddScoped(_ => blobContainerClient);
             services.AddScoped<IStorageService, AzureBlobStorageService>();
         }
@@ -98,25 +121,34 @@ public static class DependenciesConfiguration
             var storagePath = configuration.GetValue<string>("Storage:LocalPath") ?? Path.Combine(AppContext.BaseDirectory, "uploads");
             services.AddScoped<IStorageService>(_ => new LocalFileStorageService(storagePath));
         }
-        
+    }
+
+    private static void AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IGenericRepository, GenericRepository>();
+        services.AddScoped<IAssetRepository, AssetRepository>();
+        services.AddScoped<IConversationRepository, ConversationRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IToolsRepository, ToolsRepository>();
+    }
+
+    private static void AddExternalServices(this IServiceCollection services, IConfiguration configuration)
+    {
         var qdrantUrl = configuration.GetConnectionString("qdrant");
         if (string.IsNullOrEmpty(qdrantUrl))
             throw new InvalidOperationException("Qdrant connection string is not configured");
 
         services.AddSingleton<IQdrantClient>(new QdrantClient(new Uri(qdrantUrl)));
 
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IGenericRepository, GenericRepository>();
-        services.AddScoped<IAssetRepository, AssetRepository>();
-        services.AddScoped<IConversationRepository, ConversationRepository>();
-        services.AddScoped<IUserRepository, UserRepository>();
-
         TwilioClient.Init(configuration.GetValue<string>("services:twilio:AccountSid"), configuration.GetValue<string>("services:twilio:AuthToken"));
 
-        services.AddScoped<IAssetSenderService, WhatsAppSenderService>(d => 
-            new WhatsAppSenderService(d.CreateScope().ServiceProvider.GetRequiredService<ILogger<WhatsAppSenderService>>(), 
+        services.AddScoped<IAssetSenderService, WhatsAppSenderService>(d =>
+            new WhatsAppSenderService(d.CreateScope().ServiceProvider.GetRequiredService<ILogger<WhatsAppSenderService>>(),
             configuration.GetValue<string>("services:twilio:PhoneSender")));
+    }
 
+    private static void AddAiServices(this IServiceCollection services, IConfiguration configuration)
+    {
         var openAiSettings = new OpenAiSettings
         {
             ApiKey = configuration.GetValue<string>("services:openai:ApiKey") ?? throw new InvalidOperationException("OpenAI ApiKey is not configured"),
@@ -130,7 +162,7 @@ public static class DependenciesConfiguration
         };
 
         services.AddSingleton(openAiSettings);
-        
+
         services.AddScoped<OpenAIClient>(sp =>
         {
             var apiKey = new ApiKeyCredential(openAiSettings.ApiKey);
@@ -139,10 +171,6 @@ public static class DependenciesConfiguration
             {
                 var options = new AzureOpenAIClientOptions();
                 var endpoint = openAiSettings.Endpoint;
-                if (!endpoint.Contains("/openai/deployments")) 
-                {
-                   // The SDK handles the path, we just need the base endpoint
-                }
                 var client = new AzureOpenAIClient(new Uri(endpoint), apiKey, options);
                 Console.WriteLine($"[DEBUG_LOG] Initialized AzureOpenAIClient with Endpoint: {endpoint}");
                 return client;
@@ -160,7 +188,11 @@ public static class DependenciesConfiguration
         services.AddScoped<IVectorDatabaseService, QdrantService>();
         services.AddScoped<IEmbeddingsHandlerService, EmbeddingsHandlerService>();
         services.AddScoped<ILLMService, LLMService>();
-        services.AddHttpClient();
+    }
+
+    private static void AddToolsServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddScoped<ISpotifyService, SpotifyService>();
     }
 }
 
