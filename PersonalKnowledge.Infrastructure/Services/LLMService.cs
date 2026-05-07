@@ -9,23 +9,26 @@ using System.Text.Json;
 
 namespace PersonalKnowledge.Infrastructure.Services;
 
-public class LLMService : ILLMService
+public class LLMService : LLMToolsService, ILLMService
 {
     private readonly OpenAIClient _openAiClient;
     private readonly OpenAiSettings _openAiSettings;
-    private readonly ISpotifyService _spotifyService;
     private readonly ILogger<LLMService> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly IUnitOfWork _uow;
     
-    public LLMService(OpenAIClient openAiClient, OpenAiSettings openAiSettings, ILogger<LLMService> logger, IHttpClientFactory httpClientFactory, ISpotifyService spotifyService, IUnitOfWork uow)
+    public LLMService(
+        OpenAIClient openAiClient,
+        OpenAiSettings openAiSettings,
+        ILogger<LLMService> logger,
+        IHttpClientFactory httpClientFactory,
+        ISpotifyService spotifyService,
+        IUnitOfWork uow)
+        : base(spotifyService, logger, httpClientFactory, uow)
     {
         _openAiClient = openAiClient;
         _openAiSettings = openAiSettings;
-        _logger = logger;       
+        _logger = logger;
         _httpClientFactory = httpClientFactory;
-        _spotifyService = spotifyService;
-        _uow = uow;
     }
     
     public async Task<string> GenerateResponseByContext(string context, string prompt, Guid userId)
@@ -102,37 +105,17 @@ public class LLMService : ILLMService
 
     private async Task<string> ExecuteTools(ChatToolCall call, Guid userId)
     {
-        if (call.FunctionName.Equals("AddToSpotifyPlaylist", StringComparison.OrdinalIgnoreCase))
-        {
-            using var jsonDocument = JsonDocument.Parse(call.FunctionArguments);
-            var playlistName = jsonDocument.RootElement.TryGetProperty("playlistName", out var playlistNameElement);
-            var songName = jsonDocument.RootElement.TryGetProperty("songName", out var songNameElement);
-            var artistName = jsonDocument.RootElement.TryGetProperty("artistName", out var artistNameElement);
-            var playlistNameString = playlistNameElement.GetString();
-            var songNameString = songNameElement.GetString();
-            var artistNameString = !artistName ? "" : artistNameElement.GetString();
-
-            var tool = await _uow.ToolsRepository.GetUserToolAsync(userId, ToolType.Spotify);
-            if (tool == null || string.IsNullOrEmpty(tool.AccessToken))
-            {
-                return "Spotify tool not configured or access token missing.";
-            }
-
-            var spotifyUserId = tool.ToolAccountId; //tool.ToolAccountId;
-            var accessToken = tool.AccessToken;
-            
-            var selectedPlaylist = await _spotifyService.GetPlaylistIdByName(playlistNameString, spotifyUserId, accessToken);
-
-            if (string.IsNullOrEmpty(selectedPlaylist))
-                return "Playlist provided not found by api";
-
-            var addMusic =
-               await _spotifyService.AddMusicToPlaylist(selectedPlaylist, accessToken, songNameString, artistNameString);
-
-            return addMusic;
-        }
+        var functionName = call.FunctionName;
         
-        return string.Empty;
+        var methods = new Dictionary<string, Func<Task<string>>>
+        {
+            ["AddToSpotifyPlaylist"] = () => AddMusicToPlaylist(call, userId)
+        };
+        
+        if (methods.TryGetValue(functionName, out Func<Task<string>> method))
+            return await method();
+
+        return "The requested resource was not found";
     }
 
     public async Task<string> DescribeImage(string imageUrl)
@@ -240,5 +223,51 @@ public class LLMService : ILLMService
         _logger.LogInformation($"Is question result: {isQuestion}");
 
         return isQuestion;
+    }
+}
+
+public class LLMToolsService
+{
+    private readonly ISpotifyService _spotifyService;
+    private readonly ILogger<LLMService> _logger;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IUnitOfWork _uow;
+    
+    public LLMToolsService(ISpotifyService spotifyService, ILogger<LLMService> logger, IHttpClientFactory httpClientFactory, IUnitOfWork uow)
+    {
+        _spotifyService = spotifyService;
+        _logger = logger;
+        _httpClientFactory = httpClientFactory;
+        _uow = uow;
+    }
+
+    public async Task<string> AddMusicToPlaylist(ChatToolCall call, Guid userId)
+    {
+        using var jsonDocument = JsonDocument.Parse(call.FunctionArguments);
+        var playlistName = jsonDocument.RootElement.TryGetProperty("playlistName", out var playlistNameElement);
+        var songName = jsonDocument.RootElement.TryGetProperty("songName", out var songNameElement);
+        var artistName = jsonDocument.RootElement.TryGetProperty("artistName", out var artistNameElement);
+        var playlistNameString = playlistNameElement.GetString();
+        var songNameString = songNameElement.GetString();
+        var artistNameString = !artistName ? "" : artistNameElement.GetString();
+
+        var tool = await _uow.ToolsRepository.GetUserToolAsync(userId, ToolType.Spotify);
+        if (tool == null || string.IsNullOrEmpty(tool.AccessToken))
+        {
+            return "Spotify tool not configured or access token missing.";
+        }
+
+        var spotifyUserId = tool.ToolAccountId; //tool.ToolAccountId;
+        var accessToken = tool.AccessToken;
+            
+        var selectedPlaylist = await _spotifyService.GetPlaylistIdByName(playlistNameString, spotifyUserId, accessToken);
+
+        if (string.IsNullOrEmpty(selectedPlaylist))
+            return "Playlist provided not found by api";
+
+        var addMusic =
+            await _spotifyService.AddMusicToPlaylist(selectedPlaylist, accessToken, songNameString, artistNameString);
+
+        return addMusic;
     }
 }

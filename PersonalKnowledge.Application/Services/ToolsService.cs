@@ -8,7 +8,7 @@ namespace PersonalKnowledge.Application.Services;
 
 public interface IToolsService
 {
-    public Task<string> ConnectSpotifyRequest();
+    public Task<string> ConnectSpotifyRequest(string phoneNumber);
     public Task UpdateSpotifyRefreshToken(Guid toolId);
     public Task HandleSpotifyAuthenticationCallback(string state, string code, string redirectUri);
 }
@@ -31,9 +31,12 @@ public class ToolsService : IToolsService
     }
 
 
-    public async Task<string> ConnectSpotifyRequest()
+    public async Task<string> ConnectSpotifyRequest(string phoneNumber)
     {
         var user = await _tokenService.GetUserByTokenAsync();
+
+        if (user is null)
+            user = await _uow.UserRepository.GetUserByPhone(phoneNumber) ?? throw new EntityNotFoundException("The user by phone number was not found");
         
         var state = Guid.NewGuid().ToString();
 

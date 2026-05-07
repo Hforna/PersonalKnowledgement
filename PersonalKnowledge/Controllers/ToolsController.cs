@@ -14,11 +14,12 @@ public class ToolsController : ControllerBase
         _toolsService = toolsService;
     }
 
-    [HttpPost("spotify/connect")]
-    public async Task<IActionResult> ConnectSpotifyAccount()
+    [HttpPost("spotify/connect/{phoneNumber}")]
+    public async Task<IActionResult> ConnectSpotifyAccount([FromRoute]string phoneNumber)
     {
-        var uri = await _toolsService.ConnectSpotifyRequest();
-        return Ok(new Uri(uri));
+        var uri = await _toolsService.ConnectSpotifyRequest(phoneNumber);
+        
+        return Redirect(uri);
     }
 
     [HttpPost("refresh-token")]
