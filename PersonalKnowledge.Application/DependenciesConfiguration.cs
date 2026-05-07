@@ -15,5 +15,6 @@ public static class DependenciesConfiguration
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IReceiverService, ReceiverService>();
         services.AddScoped<IMessageProcessor, MessageProcessorJob>();
+        services.AddScoped<IToolsService, ToolsService>();
     }
 }

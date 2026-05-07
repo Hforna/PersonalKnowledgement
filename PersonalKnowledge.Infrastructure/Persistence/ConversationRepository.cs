@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PersonalKnowledge.Domain.Entities;
+using PersonalKnowledge.Domain.Enums;
 using PersonalKnowledge.Domain.Services;
 using X.PagedList;
 
@@ -30,5 +31,10 @@ public class ConversationRepository(DataContext context) : BaseRepository(contex
         {
             _context.Conversations.Remove(conversation);
         }
+    }
+
+    public async Task<List<Conversation>?> GetUserConversationBySource(Guid userId, ConversationSource source)
+    {
+        return await _context.Conversations.Where(d => d.UserId == userId && d.ConversationSource == source).ToListAsync();
     }
 }

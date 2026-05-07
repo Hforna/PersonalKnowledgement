@@ -6,7 +6,7 @@ using PersonalKnowledge.Results;
 namespace PersonalKnowledge.Controllers;
 
 [ApiController]
-[Route("[controller]/")]
+[Route("api/[controller]/")]
 public class ConversationsController : ControllerBase
 {
     private readonly IConversationService _conversationService;

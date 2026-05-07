@@ -23,6 +23,12 @@ public class DataContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        builder.Entity<Conversation>()
+            .HasOne(c => c.User)
+            .WithMany(u => u.Conversations)
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+        
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(DataContext).Assembly);
     }

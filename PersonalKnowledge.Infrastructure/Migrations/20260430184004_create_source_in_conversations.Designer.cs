@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PersonalKnowledge.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using PersonalKnowledge.Infrastructure.Persistence;
 namespace PersonalKnowledge.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260430184004_create_source_in_conversations")]
+    partial class create_source_in_conversations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -560,13 +563,11 @@ namespace PersonalKnowledge.Infrastructure.Migrations
 
             modelBuilder.Entity("PersonalKnowledge.Domain.Entities.Conversation", b =>
                 {
-                    b.HasOne("PersonalKnowledge.Domain.Entities.User", "User")
+                    b.HasOne("PersonalKnowledge.Domain.Entities.User", null)
                         .WithMany("Conversations")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PersonalKnowledge.Domain.Entities.Message", b =>

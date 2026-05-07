@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using PersonalKnowledge.Domain.Dtos;
 using PersonalKnowledge.Domain.Entities;
+using PersonalKnowledge.Domain.Enums;
 using PersonalKnowledge.Domain.Services;
 
 namespace PersonalKnowledge.Application.Services;
@@ -18,13 +19,11 @@ public class MessageProcessorJob(
     private readonly IAssetSenderService _senderService = senderService;
     private readonly ILogger<MessageProcessorJob> _logger = logger;
 
-    public async Task ProcessMessage(ReceiveDto receiveDto, Guid userId)
+    public async Task ProcessMessage(ReceiveDto receiveDto, Guid userId, ConversationSource source)
     {
         _logger.LogInformation("Processing message from user {UserId}: {Body}", userId, receiveDto.Body);
-
-        var isQuestion = await _llmService.IsTextQuestion(receiveDto.Body);
-
-        var conversation = await GetOrCreateConversation(userId);
+        
+        var conversation = await GetOrCreateConversation(userId, source);
 
         var userMessage = new Message
         {
@@ -37,43 +36,41 @@ public class MessageProcessorJob(
 
         await _uow.GenericRepository.AddAsync(userMessage);
         await _uow.CommitAsync();
+        
+        var response = await _messageService.GenerateMessageByText(receiveDto.Body, userId);
 
-        if (isQuestion)
+        var assistantMessage = new Message
         {
-            var response = await _messageService.GenerateMessageByText(receiveDto.Body, userId);
+            ConversationId = conversation.Id,
+            Role = "assistant",
+            Content = response.Message,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
 
-            var assistantMessage = new Message
-            {
-                ConversationId = conversation.Id,
-                Role = "assistant",
-                Content = response.Message,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+        await _uow.GenericRepository.AddAsync(assistantMessage);
+        await _uow.CommitAsync();
 
-            await _uow.GenericRepository.AddAsync(assistantMessage);
-            await _uow.CommitAsync();
-
-            var responseDto = new ChatResponseToSenderDto { Message = response.Message, Phone = receiveDto.From };
-            await _senderService.Send(responseDto);
-        }
+        var responseDto = new ChatResponseToSenderDto { Message = response.Message, Phone = receiveDto.From };
+        await _senderService.Send(responseDto);
     }
 
-    private async Task<Conversation> GetOrCreateConversation(Guid userId)
+    private async Task<Conversation> GetOrCreateConversation(Guid userId, ConversationSource source)
     {
-        var conversations = await _uow.GenericRepository.GetAllAsync<Conversation>();
+        var conversations = await _uow.ConversationRepository.GetUserConversationBySource(userId, source);
         var conversation = conversations
             .OrderByDescending(c => c.CreatedAt)
-            .FirstOrDefault(c => c.UserId == userId && c.Title == "WhatsApp Conversation");
+            .FirstOrDefault(c => c.UserId == userId);
 
         if (conversation == null)
         {
             conversation = new Conversation
             {
-                Title = "WhatsApp Conversation",
+                Title = $"User {userId} from {source.ToString()} Conversation",
                 UserId = userId,
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                UpdatedAt = DateTime.UtcNow,
+                ConversationSource = source
             };
             await _uow.GenericRepository.AddAsync(conversation);
             await _uow.CommitAsync();

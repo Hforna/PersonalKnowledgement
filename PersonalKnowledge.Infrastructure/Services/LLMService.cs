@@ -108,6 +108,9 @@ public class LLMService : ILLMService
             var playlistName = jsonDocument.RootElement.TryGetProperty("playlistName", out var playlistNameElement);
             var songName = jsonDocument.RootElement.TryGetProperty("songName", out var songNameElement);
             var artistName = jsonDocument.RootElement.TryGetProperty("artistName", out var artistNameElement);
+            var playlistNameString = playlistNameElement.GetString();
+            var songNameString = songNameElement.GetString();
+            var artistNameString = !artistName ? "" : artistNameElement.GetString();
 
             var tool = await _uow.ToolsRepository.GetUserToolAsync(userId, ToolType.Spotify);
             if (tool == null || string.IsNullOrEmpty(tool.AccessToken))
@@ -115,14 +118,18 @@ public class LLMService : ILLMService
                 return "Spotify tool not configured or access token missing.";
             }
 
-            var spotifyUserId = tool.ToolAccountId;
+            var spotifyUserId = tool.ToolAccountId; //tool.ToolAccountId;
             var accessToken = tool.AccessToken;
             
-            var selectedPlaylist = await _spotifyService.GetPlaylistIdByName(playlistNameElement.GetString(), spotifyUserId, accessToken);
+            var selectedPlaylist = await _spotifyService.GetPlaylistIdByName(playlistNameString, spotifyUserId, accessToken);
 
             if (string.IsNullOrEmpty(selectedPlaylist))
                 return "Playlist provided not found by api";
 
+            var addMusic =
+               await _spotifyService.AddMusicToPlaylist(selectedPlaylist, accessToken, songNameString, artistNameString);
+
+            return addMusic;
         }
         
         return string.Empty;

@@ -11,7 +11,7 @@ namespace PersonalKnowledge.Application.Services;
 
 public interface IReceiverService
 {
-    public Task Receive(ReceiveDto receiveDto);
+    public Task Receive(ReceiveDto receiveDto, ConversationSource source);
 }
 
 public class ReceiverService(IUnitOfWork uow, ILogger<IReceiverService> logger, 
@@ -27,7 +27,7 @@ public class ReceiverService(IUnitOfWork uow, ILogger<IReceiverService> logger,
     private readonly IEmbeddingsHandlerService _embeddingsHandlerService = embeddingsHandlerService;
     private readonly IVectorDatabaseService _vectorDatabase = vectorDatabaseService;
     
-    public async Task Receive(ReceiveDto receiveDto)
+    public async Task Receive(ReceiveDto receiveDto, ConversationSource source)
     {
         var user = await _uow.UserRepository.GetUserByPhone(receiveDto.From);
 
@@ -35,8 +35,6 @@ public class ReceiverService(IUnitOfWork uow, ILogger<IReceiverService> logger,
         {
             _logger.LogError("User with phone {Phone} sent from receiver not found", receiveDto.From);
         }
-        
-        var conversation = _uow.ConversationRepository.
         
         if (receiveDto.MediaReceivedDtos.Count > 0)
         {
@@ -86,26 +84,7 @@ public class ReceiverService(IUnitOfWork uow, ILogger<IReceiverService> logger,
 
         if (!string.IsNullOrEmpty(receiveDto.Body))
         {
-            var message = new Message()
-            {
-                Content = receiveDto.Body,
-                ConversationId = 
-            }
-            var isQuestion = await _llmService.IsTextQuestion(receiveDto.Body);
-
-            if (isQuestion)
-            {
-                var response = await _messageService.GenerateMessageByText(receiveDto.Body, user.Id);
-
-                var responseDto = new ChatResponseToSenderDto() { Message = response.Message, Phone = receiveDto.From };
-            
-                _logger.LogInformation("Response: {Response}", responseDto);
-            
-                await _senderService.Send(responseDto);
-
-                return;
-            }
-
+            BackgroundJob.Enqueue<IMessageProcessor>(d => d.ProcessMessage(receiveDto, user.Id, source));
         }
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PersonalKnowledge.Application.Services;
 using PersonalKnowledge.Domain.Dtos;
+using PersonalKnowledge.Domain.Enums;
 
 namespace PersonalKnowledge.Controllers;
 
@@ -53,7 +54,7 @@ public class WebhooksController(IReceiverService receiverService) : ControllerBa
             }
         };
 
-        await _receiverService.Receive(receiveDto);
+        await _receiverService.Receive(receiveDto, ConversationSource.WhatsApp);
 
         return Ok();
     }

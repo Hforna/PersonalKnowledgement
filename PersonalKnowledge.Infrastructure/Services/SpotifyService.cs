@@ -18,15 +18,15 @@ public class SpotifyService : ISpotifyService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<SpotifyService> _logger;
     private readonly IUnitOfWork _uow;
-    private readonly string _accessToken;
 
     public SpotifyService(IConfiguration configuration, IHttpClientFactory httpClientFactory, ILogger<SpotifyService> logger, IUnitOfWork uow)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
         _uow = uow;
-        _accessToken = configuration.GetValue<string>("services:tools:spotify:api_key");
     }
+
+    public string AuthenticationUrl { get; set; } = "https://accounts.spotify.com/authorize";
 
     public async Task<string> GetPlaylistIdByName(string playlistName, string spotifyUserId, string accessToken)
     {
@@ -42,7 +42,9 @@ public class SpotifyService : ISpotifyService
         {
             try
             {
-                var response = await client.GetAsync($"users/{spotifyUserId}/playlists?limit={limit}&offset={offset}");
+                var response = await client.GetAsync($"me/playlists?limit={limit}&offset={offset}");
+                var content = await response.Content.ReadAsStringAsync();
+                
                 if (!response.IsSuccessStatusCode)
                 {
                     _logger.LogError("Error fetching playlists for user {UserId}: {StatusCode}", spotifyUserId, response.StatusCode);
@@ -74,20 +76,30 @@ public class SpotifyService : ISpotifyService
         return string.Empty;
     }
 
-    public async Task<string> GetUserSpotifyIdByUserId(Guid userId)
+    public async Task<string> GetUserSpotifyId(string accessToken)
     {
-        var tool = await _uow.ToolsRepository.GetUserToolAsync(userId, ToolType.Spotify);
+        using var client = _httpClientFactory.CreateClient();
 
-        if (tool == null) throw new EntityNotFoundException("User tool entity was not found");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-        return tool.ToolAccountId;
+        var response = await client.GetAsync("https://api.spotify.com/v1/me");
+
+        var content = await response.Content.ReadAsStringAsync();
+        
+        response.EnsureSuccessStatusCode();
+        
+        var bytes = Encoding.UTF8.GetBytes(content);
+        var document = JsonDocument.Parse(bytes);
+        var userId = document.RootElement.GetProperty("id").GetString();
+
+        return userId;
     }
 
     public async Task<string> AddMusicToPlaylist(string playlistId, string accessToken, string songName, string? artistName = null)
     {
         using var client = _httpClientFactory.CreateClient();
         
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var querySearch = $"{songName}";
             
@@ -110,19 +122,19 @@ public class SpotifyService : ISpotifyService
         var firstItem = items[0];
 
         var songUri = firstItem.GetProperty("uri").GetString();
-        var insertMusicResponse = await InsertMusicIntoPlaylist(playlistId, songUri, _accessToken);
+        var insertMusicResponse = await InsertMusicIntoPlaylist(playlistId, songUri, accessToken);
 
         return insertMusicResponse;
     }
 
-    private async Task<string> InsertMusicIntoPlaylist(string playlistId, string songUri, string _accessToken)
+    private async Task<string> InsertMusicIntoPlaylist(string playlistId, string songUri, string accessToken)
     {
-        using var client = _httpClientFactory.CreateClient("https://api.spotify.com/v1/");
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(_accessToken);
+        using var client = _httpClientFactory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         try
         {
-            var response = await client.PostAsJsonAsync($"playlists/{playlistId}/items", new
+            var response = await client.PostAsJsonAsync($"https://api.spotify.com/v1/playlists/{playlistId}/items", new
             {
                 uris = new [] { songUri },
             });
@@ -133,6 +145,8 @@ public class SpotifyService : ISpotifyService
         }
         catch (Exception e)
         {
+            _logger.LogError(e, e.Message);
+            
             return "It was not possible to add the song to the playlist";
         }
 

@@ -4,5 +4,5 @@ namespace PersonalKnowledge.Domain.Services;
 
 public interface IMessageProcessor
 {
-    Task ProcessMessage(ReceiveDto receiveDto, Guid userId);
+    Task ProcessMessage(ReceiveDto receiveDto, Guid userId, ConversationSource source);
 }

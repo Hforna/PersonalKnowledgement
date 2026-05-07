@@ -80,6 +80,7 @@ public static class DependenciesConfiguration
     {
         services.AddDbContext<DataContext>(d => d.UseSqlServer(configuration.GetConnectionString("sqlserver")));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IMemoryCacheService, MemoryCacheService>();
     }
 
     private static void AddProcessors(this IServiceCollection services)
@@ -193,6 +194,7 @@ public static class DependenciesConfiguration
     private static void AddToolsServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ISpotifyService, SpotifyService>();
+        services.AddScoped<ISpotifyAuthenticationService, SpotifyAuthenticationService>();
     }
 }
 
