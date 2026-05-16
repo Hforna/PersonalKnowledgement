@@ -33,42 +33,7 @@ public class MessageService(
             return new ChatResponse { Message = "Unauthorized", SentAt = DateTime.UtcNow };
         }
 
-        var requestEmbedding = await _embeddingsHandlerService.GenerateEmbedding(request.Message);
-        
-        var searchResults = await _vectorDatabaseService.SearchSimilar(requestEmbedding, user.Id);
-
-        var assetIdsMissingLabels = searchResults
-            .Where(r => string.IsNullOrWhiteSpace(r.label) && r.asset_id != Guid.Empty)
-            .Select(r => r.asset_id)
-            .Distinct()
-            .ToList();
-
-        if (assetIdsMissingLabels.Any())
-        {
-            var assets = await _uow.GenericRepository.GetByIdsAsync<Asset>(assetIdsMissingLabels);
-            var assetInfo = assets.ToDictionary(a => a.Id, a => new { a.Label, a.FileName });
-
-            foreach (var result in searchResults.Where(r => string.IsNullOrWhiteSpace(r.label)))
-            {
-                if (assetInfo.TryGetValue(result.asset_id, out var info))
-                {
-                    result.label = !string.IsNullOrWhiteSpace(info.Label) ? info.Label : info.FileName;
-                }
-            }
-        }
-
-        var context = string.Join("\n", searchResults.Select(r => $"[Asset Label: {r.label}] Content: {r.text}"));
-
-        if (string.IsNullOrWhiteSpace(context))
-        {
-            return new ChatResponse
-            {
-                Message = "I don't have any documents that can help me answer that question. Please upload some relevant documents first.",
-                SentAt = DateTime.UtcNow
-            };
-        }
-
-        var responseMessage = await _llmService.GenerateResponseByContext($"{context}", request.Message, user.Id);
+        var responseMessage = await _llmService.ProcessText(request.Message, user.Id);
 
         return new ChatResponse
         {
@@ -79,22 +44,7 @@ public class MessageService(
 
     public async Task<ChatResponse> GenerateMessageByText(string text, Guid userId)
     {
-        var embeddings = await _embeddingsHandlerService.GenerateEmbedding(text);
-
-        var similarEmbeddings = await _vectorDatabaseService.SearchSimilar(embeddings, userId);
-        
-        var context = string.Join("\n", similarEmbeddings.Select(r => $"[Asset Label: {r.label}] Content: {r.text}"));
-
-        if (string.IsNullOrWhiteSpace(context))
-        {
-            return new ChatResponse
-            {
-                Message = "I don't have any documents that can help me answer that question. Please upload some relevant documents first.",
-                SentAt = DateTime.UtcNow
-            };
-        }
-        
-        var response = await _llmService.GenerateResponseByContext(context, text, userId);
+        var response = await _llmService.ProcessText(text, userId);
         
         return new ChatResponse
         {

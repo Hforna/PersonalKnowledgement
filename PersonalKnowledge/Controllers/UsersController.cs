@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PersonalKnowledge.Application.Requests;
 using PersonalKnowledge.Domain.Entities;
+using PersonalKnowledge.Domain.Helpers;
 
 namespace PersonalKnowledge.Controllers;
 
@@ -47,7 +48,7 @@ public class UsersController(UserManager<User> userManager) : ControllerBase
             user.UserName = request.UserName;
 
         if (request.PhoneNumber != null)
-            user.PhoneNumber = request.PhoneNumber;
+            user.PhoneNumber = PhoneHelper.NormalizePhoneNumber(request.PhoneNumber);
 
         var result = await userManager.UpdateAsync(user);
         if (!result.Succeeded)

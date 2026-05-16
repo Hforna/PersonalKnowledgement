@@ -57,6 +57,9 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
         builder.Property(e => e.UpdatedAt)
             .HasDefaultValueSql("GETUTCDATE()")
             .ValueGeneratedOnAddOrUpdate();
+
+        builder.Property(e => e.Role)
+            .HasConversion<string>();
     }
 }
 

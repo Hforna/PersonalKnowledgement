@@ -6,4 +6,5 @@ namespace PersonalKnowledge.Domain.Services;
 public interface IToolsRepository
 {
     public Task<Tools?> GetUserToolAsync(Guid userId, ToolType type);
+    public Task<List<Tools>> GetAllToolsByTypeAsync(ToolType type);
 }

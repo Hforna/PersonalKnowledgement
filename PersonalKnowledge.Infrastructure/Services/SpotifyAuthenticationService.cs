@@ -26,10 +26,10 @@ public class SpotifyAuthenticationService : ISpotifyAuthenticationService
         _httpClient = httpClient;
     }
     
-    public string BuildAuthenticationUri(string? state = null)
+    public string BuildAuthenticationUri(string redirectUri, string? state = null)
     {
         var uri = 
-            $"https://accounts.spotify.com/authorize?response_type=code&client_id={_clientId}&redirect_uri={_redirectUri}&scope={_scopes}";
+            $"https://accounts.spotify.com/authorize?response_type=code&client_id={_clientId}&redirect_uri={redirectUri}&scope={_scopes}";
 
         if (!string.IsNullOrEmpty(state))
             uri += $"&state={state}";

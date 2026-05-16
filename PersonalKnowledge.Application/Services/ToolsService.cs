@@ -2,6 +2,7 @@ using PersonalKnowledge.Domain.Dtos;
 using PersonalKnowledge.Domain.Entities;
 using PersonalKnowledge.Domain.Enums;
 using PersonalKnowledge.Domain.Exceptions;
+using PersonalKnowledge.Domain.Helpers;
 using PersonalKnowledge.Domain.Services;
 
 namespace PersonalKnowledge.Application.Services;
@@ -10,7 +11,7 @@ public interface IToolsService
 {
     public Task<string> ConnectSpotifyRequest(string phoneNumber);
     public Task UpdateSpotifyRefreshToken(Guid toolId);
-    public Task HandleSpotifyAuthenticationCallback(string state, string code, string redirectUri);
+    public Task HandleSpotifyAuthenticationCallback(string state, string code);
 }
 
 public class ToolsService : IToolsService
@@ -20,14 +21,16 @@ public class ToolsService : IToolsService
     private readonly IMemoryCacheService _memoryCacheService;
     private readonly ITokenService _tokenService;
     private readonly ISpotifyService _spotifyService;
+    private readonly IRequestService _requestService;
 
-    public ToolsService(ISpotifyAuthenticationService spotifyAuthenticationService, IUnitOfWork uow, IMemoryCacheService memoryCacheService, ITokenService tokenService, ISpotifyService spotifyService)
+    public ToolsService(ISpotifyAuthenticationService spotifyAuthenticationService, IUnitOfWork uow, IMemoryCacheService memoryCacheService, ITokenService tokenService, ISpotifyService spotifyService, IRequestService requestService)
     {
         _spotifyAuthenticationService = spotifyAuthenticationService;
         _uow = uow;
         _spotifyService = spotifyService;
         _memoryCacheService = memoryCacheService;
         _tokenService = tokenService;
+        _requestService = requestService;
     }
 
 
@@ -36,7 +39,10 @@ public class ToolsService : IToolsService
         var user = await _tokenService.GetUserByTokenAsync();
 
         if (user is null)
-            user = await _uow.UserRepository.GetUserByPhone(phoneNumber) ?? throw new EntityNotFoundException("The user by phone number was not found");
+        {
+            var normalizedPhone = PhoneHelper.NormalizePhoneNumber(phoneNumber);
+            user = await _uow.UserRepository.GetUserByPhone(normalizedPhone) ?? throw new EntityNotFoundException("The user by phone number was not found");
+        }
         
         var state = Guid.NewGuid().ToString();
 
@@ -45,7 +51,8 @@ public class ToolsService : IToolsService
         if (!isSet)
             throw new StorageException("It was not possible to save the state value");
         
-        return _spotifyAuthenticationService.BuildAuthenticationUri(state);
+        var redirectUri = $"{_requestService.GetBaseUrl()}/api/tools/spotify/callback";
+        return _spotifyAuthenticationService.BuildAuthenticationUri(redirectUri, state);
     }
 
     public async Task UpdateSpotifyRefreshToken(Guid userId)
@@ -67,8 +74,9 @@ public class ToolsService : IToolsService
         await _uow.CommitAsync();
     }
 
-    public async Task HandleSpotifyAuthenticationCallback(string state, string code, string redirectUri)
+    public async Task HandleSpotifyAuthenticationCallback(string state, string code)
     {
+        var redirectUri = $"{_requestService.GetBaseUrl()}/api/tools/spotify/callback";
         var tokens = await _spotifyAuthenticationService.GetAccessToken(code, redirectUri, state);
 
         var userId = Guid.Parse(_memoryCacheService.GetValueByKey(state));

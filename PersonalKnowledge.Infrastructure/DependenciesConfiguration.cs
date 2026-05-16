@@ -143,9 +143,12 @@ public static class DependenciesConfiguration
 
         TwilioClient.Init(configuration.GetValue<string>("services:twilio:AccountSid"), configuration.GetValue<string>("services:twilio:AuthToken"));
 
-        services.AddScoped<IAssetSenderService, WhatsAppSenderService>(d =>
-            new WhatsAppSenderService(d.CreateScope().ServiceProvider.GetRequiredService<ILogger<WhatsAppSenderService>>(),
-            configuration.GetValue<string>("services:twilio:PhoneSender")));
+        services.AddScoped<WhatsAppSenderService>(d =>
+            new WhatsAppSenderService(d.GetRequiredService<ILogger<WhatsAppSenderService>>(),
+            configuration.GetValue<string>("services:twilio:PhoneSender")!));
+
+        services.AddScoped<IAssetSenderService>(sp => sp.GetRequiredService<WhatsAppSenderService>());
+        services.AddScoped<IWhatsAppSender>(sp => sp.GetRequiredService<WhatsAppSenderService>());
     }
 
     private static void AddAiServices(this IServiceCollection services, IConfiguration configuration)
@@ -195,6 +198,7 @@ public static class DependenciesConfiguration
     {
         services.AddScoped<ISpotifyService, SpotifyService>();
         services.AddScoped<ISpotifyAuthenticationService, SpotifyAuthenticationService>();
+        services.AddScoped<ISenderResolver, SenderResolver>();
     }
 }
 

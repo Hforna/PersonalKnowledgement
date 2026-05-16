@@ -16,7 +16,7 @@ public class QdrantService : IVectorDatabaseService
         _qdrantClient = qdrantClient;
     }
 
-    public async Task InsertEmbedding(Guid chunkId, ReadOnlyMemory<float> embedding, Dictionary<string, string> payload)
+    public async Task InsertEmbedding(Guid chunkId, ReadOnlyMemory<float> embedding, Dictionary<string, string> payload, Guid userId)
     {
         if (!await _qdrantClient.CollectionExistsAsync(CollectionName))
             await _qdrantClient.CreateCollectionAsync(CollectionName,
@@ -36,14 +36,12 @@ public class QdrantService : IVectorDatabaseService
         await _qdrantClient.UpsertAsync(CollectionName, new[] { point });
     }
 
-    public async Task<List<EmbeddingPayloadDto>> SearchSimilar(ReadOnlyMemory<float> embedding, Guid? userId = null, int limit = 30)
+    public async Task<List<EmbeddingPayloadDto>> SearchSimilar(ReadOnlyMemory<float> embedding, Guid userId, int limit = 30)
     {
         Filter? filter = null;
-        if (userId.HasValue)
-        {
-            filter = new Filter();
-            filter.Must.Add(new Condition { Field = new FieldCondition { Key = "user_id", Match = new Match { Text = userId.Value.ToString() } } });
-        }
+
+        filter = new Filter();
+        filter.Must.Add(new Condition { Field = new FieldCondition { Key = "user_id", Match = new Match { Text = userId.ToString() } } });
 
         var results = await _qdrantClient.SearchAsync(CollectionName, embedding.ToArray(), filter: filter, limit: 50);
 

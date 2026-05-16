@@ -11,13 +11,19 @@ public class MessageProcessorJob(
     ILLMService llmService,
     IMessageService messageService,
     IAssetSenderService senderService,
-    ILogger<MessageProcessorJob> logger) : IMessageProcessor
+    ILogger<MessageProcessorJob> logger,
+    ISenderResolver resolver,
+    IVectorDatabaseService vectorDatabaseService,
+    IEmbeddingsHandlerService embeddingsHandlerService) : IMessageProcessor
 {
     private readonly IUnitOfWork _uow = uow;
     private readonly ILLMService _llmService = llmService;
     private readonly IMessageService _messageService = messageService;
     private readonly IAssetSenderService _senderService = senderService;
     private readonly ILogger<MessageProcessorJob> _logger = logger;
+    private readonly ISenderResolver _senderResolver = resolver;
+    private readonly IEmbeddingsHandlerService _embeddingsHandlerService = embeddingsHandlerService;
+    private readonly IVectorDatabaseService _vectorDatabaseService = vectorDatabaseService;
 
     public async Task ProcessMessage(ReceiveDto receiveDto, Guid userId, ConversationSource source)
     {
@@ -28,7 +34,7 @@ public class MessageProcessorJob(
         var userMessage = new Message
         {
             ConversationId = conversation.Id,
-            Role = "user",
+            Role = MessageRole.User,
             Content = receiveDto.Body,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -36,14 +42,14 @@ public class MessageProcessorJob(
 
         await _uow.GenericRepository.AddAsync(userMessage);
         await _uow.CommitAsync();
-        
-        var response = await _messageService.GenerateMessageByText(receiveDto.Body, userId);
+
+        var sendingResponse = await _senderResolver.ResolveMessageSending(receiveDto.Body, userId);
 
         var assistantMessage = new Message
         {
             ConversationId = conversation.Id,
-            Role = "assistant",
-            Content = response.Message,
+            Role = MessageRole.Assistant,
+            Content = sendingResponse,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -51,8 +57,7 @@ public class MessageProcessorJob(
         await _uow.GenericRepository.AddAsync(assistantMessage);
         await _uow.CommitAsync();
 
-        var responseDto = new ChatResponseToSenderDto { Message = response.Message, Phone = receiveDto.From };
-        await _senderService.Send(responseDto);
+        var responseDto = new ChatResponseToSenderDto { Message = sendingResponse, Phone = receiveDto.From };
     }
 
     private async Task<Conversation> GetOrCreateConversation(Guid userId, ConversationSource source)

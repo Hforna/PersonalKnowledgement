@@ -5,6 +5,7 @@ using PersonalKnowledge.Domain.Constants;
 using PersonalKnowledge.Domain.Dtos;
 using PersonalKnowledge.Domain.Entities;
 using PersonalKnowledge.Domain.Enums;
+using PersonalKnowledge.Domain.Helpers;
 using PersonalKnowledge.Domain.Services;
 
 namespace PersonalKnowledge.Application.Services;
@@ -29,6 +30,9 @@ public class ReceiverService(IUnitOfWork uow, ILogger<IReceiverService> logger,
     
     public async Task Receive(ReceiveDto receiveDto, ConversationSource source)
     {
+        receiveDto.From = PhoneHelper.NormalizePhoneNumber(receiveDto.From);
+        receiveDto.To = PhoneHelper.NormalizePhoneNumber(receiveDto.To);
+
         var user = await _uow.UserRepository.GetUserByPhone(receiveDto.From);
 
         if (user is null)

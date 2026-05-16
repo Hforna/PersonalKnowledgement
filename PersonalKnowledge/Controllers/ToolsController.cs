@@ -14,7 +14,7 @@ public class ToolsController : ControllerBase
         _toolsService = toolsService;
     }
 
-    [HttpPost("spotify/connect/{phoneNumber}")]
+    [HttpGet("spotify/connect/{phoneNumber}")]
     public async Task<IActionResult> ConnectSpotifyAccount([FromRoute]string phoneNumber)
     {
         var uri = await _toolsService.ConnectSpotifyRequest(phoneNumber);
@@ -36,7 +36,7 @@ public class ToolsController : ControllerBase
         if (!string.IsNullOrEmpty(error))
             return BadRequest();
 
-        await _toolsService.HandleSpotifyAuthenticationCallback(state, code, "https://d77e-2804-d51-4451-4600-f4b3-35a8-7ff0-6a54.ngrok-free.app/api/tools/spotify/callback");
+        await _toolsService.HandleSpotifyAuthenticationCallback(state, code);
         
         return Ok();
     }

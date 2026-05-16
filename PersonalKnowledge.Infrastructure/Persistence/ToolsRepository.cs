@@ -11,4 +11,9 @@ public class ToolsRepository(DataContext context) : BaseRepository(context), ITo
     {
         return await _context.Tools.FirstOrDefaultAsync(t => t.UserId == userId && t.Type == type);
     }
+
+    public async Task<List<Tools>> GetAllToolsByTypeAsync(ToolType type)
+    {
+        return await _context.Tools.Where(d => d.Type == type).ToListAsync();
+    }
 }

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using PersonalKnowledge.Domain.Entities;
 using PersonalKnowledge.Domain.Services;
+using PersonalKnowledge.Infrastructure.Migrations;
 
 namespace PersonalKnowledge.Infrastructure.Services;
 
@@ -55,7 +56,7 @@ public class ImageAssetProcessorJob : IImageAssetProcessor
             { "label", asset.Label ?? "" },
             { "asset_id", asset.Id.ToString() },
             { "user_id", asset.UserId.ToString() }
-        });
+        }, userId: asset.UserId);
 
         asset.ProcessAsset();
         

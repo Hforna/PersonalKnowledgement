@@ -16,4 +16,12 @@ public class RequestService(IHttpContextAccessor httpContextAccessor) : IRequest
 
         return authHeader.Substring("Bearer ".Length).Trim();
     }
+
+    public string GetBaseUrl()
+    {
+        var request = httpContextAccessor.HttpContext?.Request;
+        if (request == null) return string.Empty;
+
+        return $"{request.Scheme}://{request.Host}{request.PathBase}";
+    }
 }

@@ -20,6 +20,7 @@ public class DataContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     public DbSet<MessageSource> MessageSources { get; set; }
     public DbSet<Topic> Topics { get; set; }
     public DbSet<Tools> Tools { get; set; }
+    public DbSet<SchedulingMessage> SchedulingMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

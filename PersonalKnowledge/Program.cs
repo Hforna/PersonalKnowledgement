@@ -5,6 +5,7 @@ using PersonalKnowledge.Infrastructure;
 using PersonalKnowledge.Workers;
 
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,15 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddRouting(d => d.LowercaseUrls = true);
 builder.Services.AddRouting(d => d.LowercaseQueryStrings = true);
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    // Clear known proxies and networks to allow ngrok (or any proxy) to be trusted in dev/limited environments.
+    // For production, you'd typically specify known proxy IP addresses.
+    options.KnownProxies.Clear();
+    options.KnownNetworks.Clear();
+});
+
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddWorker(builder.Configuration);
@@ -50,6 +60,8 @@ builder.Services.AddWorker(builder.Configuration);
 builder.Services.AddMemoryCache();
 
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();

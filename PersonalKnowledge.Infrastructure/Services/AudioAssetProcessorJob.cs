@@ -55,7 +55,7 @@ public class AudioAssetProcessorJob : IAudioAssetProcessor
             { "label", asset.Label ?? "" },
             { "asset_id", asset.Id.ToString() },
             { "user_id", asset.UserId.ToString() }
-        });
+        }, asset.UserId);
 
         asset.ProcessAsset();
         
